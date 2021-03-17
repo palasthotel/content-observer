@@ -27,6 +27,7 @@ namespace Palasthotel\WordPress\ContentObserver;
  * @property Settings settings
  * @property Assets assets
  * @property OnPostChange $onPostChange
+ * @property RemoteRequest remoteRequest
  */
 class Plugin {
 
@@ -37,7 +38,7 @@ class Plugin {
 
 	const SETTINGS_PAGE = "content-observer-settings";
 
-	const REQUEST_HEADER_AUTH = "content_observer_api_key";
+	const REQUEST_PARAM_API_KEY = "content_observer_api_key";
 
 	const ACTION_ON_UPDATE = "content_observer_on_update";
 
@@ -65,7 +66,12 @@ class Plugin {
 		$this->repo         = new Repository( $this );
 		$this->rest         = new REST( $this );
 		$this->settings     = new Settings( $this );
+		$this->remoteRequest = new RemoteRequest($this);
 		$this->onPostChange = new OnPostChange( $this );
+
+		if(class_exists("\WP_CLI")){
+			\WP_CLI::add_command('content-observer', new CLI($this));
+		}
 
 		register_activation_hook( __FILE__, array( $this, "activation" ) );
 		register_deactivation_hook( __FILE__, array( $this, "deactivation" ) );
