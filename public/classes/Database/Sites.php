@@ -26,14 +26,13 @@ class Sites extends _DB {
 	public function set($site){
 		$args = [
 			"id" => $site->id,
-			"site_domain" => $site->domain,
-			"site_has_ssl" => $site->ssl ? "1" : "0",
+			"site_url" => $site->url,
 			"site_api_key" => $site->api_key,
 			"relation_type" => $site->relationType,
 			"registration_time" => $site->registration_time,
 			"last_notification_time" => $site->last_notification_time,
 		];
-		$format = ["%d","%s","%s","%s","%s","%d","%d"];
+		$format = ["%d","%s","%s","%s","%d","%d"];
 
 		if(null !== $site->id){
 			return $this->wpdb->update(
@@ -67,11 +66,11 @@ class Sites extends _DB {
 	 */
 	public function getAll() {
 		$results = $this->wpdb->get_results(
-			"SELECT id, site_domain, site_has_ssl, site_api_key, relation_type, registration_time, last_notification_time FROM $this->table"
+			"SELECT id, site_url, site_api_key, relation_type, registration_time, last_notification_time FROM $this->table"
 		);
 
 		return array_map( function ( $row ) {
-			return Site::build( $row->site_domain, $row->site_has_ssl === "1" )
+			return Site::build( $row->site_url )
 			           ->setId( $row->id )
 			           ->setApiKey( $row->site_api_key )
 			           ->setRelationType( $row->site_type )
@@ -88,14 +87,13 @@ class Sites extends _DB {
 		\dbDelta( "CREATE TABLE IF NOT EXISTS $this->table
 			(
 			 id int(8) unsigned auto_increment,
-			 site_domain varchar(190) NOT NULL,
-			 site_has_ssl ENUM('0', '1') NOT NULL,
+			 site_url varchar(190) NOT NULL,
 			 site_api_key text NOT NULL,
 			 relation_type ENUM('observer', 'observable') NOT NULL,
 			 registration_time bigint(20) NOT NULL,
 			 last_notification_time bigint(20) NOT NULL DEFAULT 0,
 			 primary key (id),
-			 unique key (site_domain),
+			 unique key (site_url),
 			 key (registration_time),
 			 key (last_notification_time)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;" );

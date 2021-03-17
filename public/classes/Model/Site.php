@@ -5,8 +5,7 @@ namespace Palasthotel\WordPress\ContentObserver\Model;
 
 /**
  * @property null|int id
- * @property string domain
- * @property bool ssl
+ * @property string url
  * @property string api_key
  * @property int registration_time
  * @property null last_notification_time
@@ -17,18 +16,17 @@ class Site {
 	const OBSERVER = "observer";
 	const OBSERVABLE = "observable";
 
-	private function __construct( $domain, $ssl = true ) {
+	private function __construct( $url ) {
 		$this->id                     = null;
-		$this->domain                 = $domain;
-		$this->ssl                    = $ssl;
+		$this->url                    = $url;
 		$this->api_key                = "";
 		$this->registration_time      = time();
 		$this->last_notification_time = 0;
 		$this->relationType           = static::OBSERVABLE;
 	}
 
-	public static function build( $url, $ssl = true ) {
-		return new Site( $url, $ssl );
+	public static function build( $url ) {
+		return new Site( $url );
 	}
 
 	public function setId( $id ) {
@@ -61,10 +59,6 @@ class Site {
 		return $this;
 	}
 
-	public function hasSSL() {
-		return $this->ssl;
-	}
-
 	public function observable() {
 		return $this->setRelationType( static::OBSERVABLE );
 	}
@@ -74,18 +68,17 @@ class Site {
 	}
 
 	public function isObservable() {
-		return static::OBSERVABLE === $this->type;
+		return static::OBSERVABLE === $this->relationType;
 	}
 
 	public function isObserver() {
-		return static::OBSERVER === $this->type;
+		return static::OBSERVER === $this->relationType;
 	}
 
 	public function asArray() {
 		return [
 			"id"                     => $this->id,
-			"domain"                 => $this->domain,
-			"ssl"                    => $this->ssl,
+			"url"                    => $this->url,
 			"relation_type"          => $this->relationType,
 			"api_key"                => $this->api_key,
 			"registration_time"      => $this->registration_time,
