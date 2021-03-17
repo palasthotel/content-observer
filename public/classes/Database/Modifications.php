@@ -13,7 +13,7 @@ use wpdb;
 class Modifications extends _DB {
 
 	public function __construct() {
-		parent::__construct("content_observer_modifications");
+		parent::__construct( "content_observer_modifications" );
 	}
 
 	public function setCreate( $post_id ) {
@@ -37,10 +37,12 @@ class Modifications extends _DB {
 		return $this->wpdb->replace(
 			$this->table,
 			[
-				"post_id"      => $modification->post_id,
-				"mod_type" => $modification->type,
-				"mod_time"  => $modification->modified,
-			], [ "%d", "%s", "%d" ]
+				"site_id"      => $modification->site_id,
+				"content_id"   => $modification->content_id,
+				"content_type" => $modification->content_type,
+				"mod_type"     => $modification->type,
+				"mod_time"     => $modification->modified,
+			], [ "%d", "%s", "%s", "%s", "%d" ]
 		);
 	}
 
@@ -50,17 +52,18 @@ class Modifications extends _DB {
 	 *
 	 * @return array|object|null
 	 */
-	public function getModifications( $site_id,  $since ) {
-		$site_id_query = null === $site_id ? "site_id IS NULL" : "site_id = ".intval($site_id);
-		$results = $this->wpdb->get_results(
+	public function getModifications( $site_id, $since ) {
+		$site_id_query = null === $site_id ? "site_id IS NULL" : "site_id = " . intval( $site_id );
+		$results       = $this->wpdb->get_results(
 			$this->wpdb->prepare(
-				"SELECT site_id, post_id, mod_type, mod_time FROM $this->table WHERE $site_id_query AND mod_time >= %d",
+				"SELECT site_id, content_id, content_type, mod_time, mod_type FROM $this->table WHERE $site_id_query AND mod_time >= %d",
 				$since
 			)
 		);
 
 		return array_map( function ( $row ) {
-			return Modification::build( $row->post_id, $row->mod_time )
+			return Modification::build( $row->content_id, $row->content_type, $row->mod_time )
+			                   ->setSiteId( $row->site_id )
 			                   ->setType( $row->mod_type );
 		}, $results );
 	}
@@ -70,7 +73,6 @@ class Modifications extends _DB {
 	 */
 	function createTable() {
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-		$sitesTableName = $this->wpdb->prefix.Sites::TABLE_NAME_WITHOUT_PREFIX;
 		\dbDelta( "CREATE TABLE IF NOT EXISTS $this->table
 			(
 			 site_id int(8) unsigned DEFAULT 0,
@@ -83,8 +85,7 @@ class Modifications extends _DB {
 			 key (content_type),
 			 key (mod_type),
 			 key (mod_time),
-			 key modification_time_and_type (mod_time, mod_type),
-			 foreign key (site_id) REFERENCES $sitesTableName (id) ON DELETE CASCADE 
+			 key modification_time_and_type (mod_time, mod_type)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;" );
 	}
 

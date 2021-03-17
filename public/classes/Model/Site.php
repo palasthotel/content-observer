@@ -9,7 +9,7 @@ namespace Palasthotel\WordPress\ContentObserver\Model;
  * @property string api_key
  * @property int registration_time
  * @property null last_notification_time
- * @property string relationType
+ * @property string $relation_type
  */
 class Site {
 
@@ -18,11 +18,11 @@ class Site {
 
 	private function __construct( $url ) {
 		$this->id                     = null;
-		$this->url                    = $url;
+		$this->url                    = rtrim( $url, "/" ) . "/";
 		$this->api_key                = "";
 		$this->registration_time      = time();
 		$this->last_notification_time = 0;
-		$this->relationType           = static::OBSERVABLE;
+		$this->relation_type          = static::OBSERVABLE;
 	}
 
 	public static function build( $url ) {
@@ -54,7 +54,7 @@ class Site {
 	}
 
 	public function setRelationType( $type ) {
-		$this->relationType = $type;
+		$this->relation_type = $type;
 
 		return $this;
 	}
@@ -68,21 +68,32 @@ class Site {
 	}
 
 	public function isObservable() {
-		return static::OBSERVABLE === $this->relationType;
+		return static::OBSERVABLE === $this->relation_type;
 	}
 
 	public function isObserver() {
-		return static::OBSERVER === $this->relationType;
+		return static::OBSERVER === $this->relation_type;
 	}
 
 	public function asArray() {
 		return [
 			"id"                     => $this->id,
 			"url"                    => $this->url,
-			"relation_type"          => $this->relationType,
+			"relation_type"          => $this->relation_type,
 			"api_key"                => $this->api_key,
 			"registration_time"      => $this->registration_time,
 			"last_notification_time" => $this->last_notification_time,
 		];
+	}
+
+	/**
+	 * @param Site $site
+	 *
+	 * @return bool
+	 */
+	public function equals( $site ) {
+		return $site->url == $this->url &&
+		       $site->api_key == $this->api_key &&
+		       $site->relation_type === $this->relation_type;
 	}
 }

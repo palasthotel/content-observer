@@ -5,6 +5,7 @@ namespace Palasthotel\WordPress\ContentObserver;
 
 
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
+use Palasthotel\WordPress\ContentObserver\Model\Site;
 use WP_REST_Request;
 
 class REST extends _Component {
@@ -22,6 +23,33 @@ class REST extends _Component {
 		add_action( 'rest_api_init', array( $this, 'init_rest_api' ) );
 	}
 
+	/**
+	 * @param Site $site
+	 *
+	 * @return string
+	 */
+	public function getRestBaseUrl( $site ) {
+		return trim( $site->url ) . "/" . rest_get_url_prefix() . "/" . self::NAMESPACE;
+	}
+
+	/**
+	 * @param Site $site
+	 *
+	 * @return string
+	 */
+	public function getPingUrl( $site ) {
+		return $this->getRestBaseUrl( $site ) . "/ping";
+	}
+
+	/**
+	 * @param Site $site
+	 *
+	 * @return string
+	 */
+	public function getConnectUrl( $site ) {
+		return $this->getRestBaseUrl( $site ) . "/connect";
+	}
+
 	public function init_rest_api() {
 		register_rest_route(
 			static::NAMESPACE,
@@ -30,7 +58,7 @@ class REST extends _Component {
 				'methods'             => "GET",
 				'callback'            => [ $this, 'ping' ],
 				'permission_callback' => function ( WP_REST_Request $request ) {
-					return $request->get_header( Plugin::REQUEST_HEADER_AUTH ) === $this->plugin->settings->getApiKey();
+					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
 				},
 			)
 		);
@@ -40,7 +68,9 @@ class REST extends _Component {
 			array(
 				'methods'             => "GET",
 				'callback'            => function () {
-					return $this->plugin->repo->getSites();
+					return array_map( function ( $site ) {
+						return $site->asArray();
+					}, $this->plugin->repo->getSites() );
 				},
 				'permission_callback' => function ( WP_REST_Request $request ) {
 					return current_user_can( 'manage_options' );
@@ -49,20 +79,33 @@ class REST extends _Component {
 		);
 		register_rest_route(
 			static::NAMESPACE,
-			'/observer',
+			'/connect',
 			array(
 				'methods'             => "POST",
-				'callback'            => [ $this, 'register_observer' ],
+				'callback'            => [ $this, 'connect' ],
 				'permission_callback' => function ( WP_REST_Request $request ) {
-					return $request->get_header( Plugin::REQUEST_HEADER_AUTH ) === $this->plugin->settings->getApiKey();
+					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
 				},
 				'args'                => [
-					"site_url" => array(
+					"site_url"        => array(
 						'default'           => "",
 						'validate_callback' => function ( $value, $request, $param ) {
 							return filter_var( $value, FILTER_VALIDATE_URL );
 						},
+						'sanitize_callback' => function ( $value, $request, $param ) {
+							return esc_url( $value );
+						},
 					),
+					"foreign_api_key" => [
+						'sanitize_callback' => function ( $value, $request, $param ) {
+							return sanitize_text_field( $value );
+						},
+					],
+					"relation_type"   => [
+						'validate_callback' => function ( $value, $request, $param ) {
+							return $value === Site::OBSERVER || Site::OBSERVABLE;
+						},
+					]
 				]
 			)
 		);
@@ -73,7 +116,7 @@ class REST extends _Component {
 				'methods'             => "POST",
 				'callback'            => array( $this, 'post_modifications' ),
 				'permission_callback' => function ( WP_REST_Request $request ) {
-					return $request->get_header( Plugin::REQUEST_HEADER_AUTH ) === $this->plugin->settings->getApiKey();
+					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
 				},
 				'args'                => [
 					"mods" => array(
@@ -97,7 +140,7 @@ class REST extends _Component {
 				'methods'             => "GET",
 				'callback'            => array( $this, 'get_modifications' ),
 				'permission_callback' => function ( WP_REST_Request $request ) {
-					return $request->get_header( Plugin::REQUEST_HEADER_AUTH ) === $this->plugin->settings->getApiKey();
+					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
 				},
 				'args'                => [
 					"post_types" => array(
@@ -117,7 +160,7 @@ class REST extends _Component {
 						},
 					),
 					"since"      => array(
-						"default" => 0,
+						"default"           => 0,
 						'sanitize_callback' => function ( $value, $request, $param ) {
 							return intval( $value );
 						},
@@ -133,11 +176,43 @@ class REST extends _Component {
 		];
 	}
 
+	public function connect( WP_REST_Request $request ) {
+		$siteUrl       = $request->get_param( "site_url" );
+		$foreignApiKey = $request->get_param( "foreign_api_key" );
+		$relationType  = $request->get_param( "relation_type" );
+		$site          = Site::build( $siteUrl )
+		                     ->setApiKey( $foreignApiKey )
+		                     ->setRelationType( $relationType );
+		$dbSite        = $this->plugin->repo->findSite( $site );
+		error_log(json_encode($dbSite));
+		error_log(json_encode($site));
+		error_log($dbSite instanceof $site);
+
+		if($dbSite instanceof Site && $dbSite->equals($site)){
+			return  [
+				"success" => true,
+			];
+		}
+
+		if ( $dbSite instanceof $site ) {
+			$success = $this->plugin->repo->setSite(
+				$dbSite
+					->setApiKey( $foreignApiKey )
+					->setRelationType( $relationType )
+			);
+		} else {
+			$success = $this->plugin->repo->setSite( $site );
+		}
+		return [
+			"success" => true === $success || $success > 0,
+		];
+	}
+
 	public function get_modifications( WP_REST_Request $request ) {
 		// provide all modifications
 		$post_types           = $request->get_param( "post_types" );
 		$since                = $request->get_param( "since" );
-		$mods                 = $this->plugin->repo->getModifications(null, $since );
+		$mods                 = $this->plugin->repo->getModifications( null, $since );
 		$postTypeFilteredMods = array_filter( $mods, function ( $mod ) use ( $post_types ) {
 			return empty( $post_types ) || in_array( get_post_type( $mod->post_id ), $post_types );
 		} );

@@ -1,13 +1,13 @@
 <?php
 
-
 namespace Palasthotel\WordPress\ContentObserver\Model;
 
-
 /**
- * @property int $post_id
- * @property string type
- * @property int modified
+ * @property string $content_id
+ * @property string $content_type
+ * @property string $type
+ * @property int $modified
+ * @property int site_id
  */
 class Modification {
 
@@ -18,24 +18,37 @@ class Modification {
 	/**
 	 * Modification constructor.
 	 *
-	 * @param int $post_id
+	 * @param string $content_id
+	 * @param string $content_type
 	 * @param int|null $timestamp
 	 */
-	private function __construct( $post_id, $timestamp = null ) {
-		$this->post_id = intval( $post_id );
+	private function __construct( $content_id, $content_type, $timestamp = null ) {
+		$this->site_id = 0; // 0 is this site
+		$this->content_id = $content_id;
+		$this->content_type = $content_type;
 		$this->setModified( $timestamp ? $timestamp : time() );
 		$this->setType( static::CREATE );
 	}
 
 	/**
-	 * @param int $post_id
-	 *
+	 * @param string $content_id
+	 * @param string $content_type
 	 * @param int|null $timestamp
 	 *
 	 * @return Modification
 	 */
-	public static function build($post_id, $timestamp = null){
-		return (new Modification($post_id, $timestamp));
+	public static function build($content_id, $content_type, $timestamp = null){
+		return new Modification($content_id, $content_type, $timestamp);
+	}
+
+	/**
+	 * @param int $site_id
+	 *
+	 * @return $this
+	 */
+	public function setSiteId($site_id){
+		$this->site_id = $site_id;
+		return $this;
 	}
 
 	public function setModified( $timestamp ) {
@@ -46,7 +59,6 @@ class Modification {
 
 	public function setType( $type ) {
 		$this->type = $type;
-
 		return $this;
 	}
 
@@ -64,7 +76,8 @@ class Modification {
 
 	public function asArray(){
 		return [
-			"post_id" => $this->post_id,
+			"content_id" => $this->content_id,
+			"content_type" => $this->content_type,
 			"type" => $this->type,
 			"modified" => $this->modified,
 		];

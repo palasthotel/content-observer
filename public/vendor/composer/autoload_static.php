@@ -29,6 +29,7 @@ class ComposerStaticInit0bbd900ba3bb80996da8ec5c9156e10a
         'Palasthotel\\WordPress\\ContentObserver\\Modifications' => __DIR__ . '/../..' . '/classes/Database/Modifications.php',
         'Palasthotel\\WordPress\\ContentObserver\\OnPostChange' => __DIR__ . '/../..' . '/classes/OnPostChange.php',
         'Palasthotel\\WordPress\\ContentObserver\\REST' => __DIR__ . '/../..' . '/classes/REST.php',
+        'Palasthotel\\WordPress\\ContentObserver\\RemoteRequest' => __DIR__ . '/../..' . '/classes/RemoteRequest.php',
         'Palasthotel\\WordPress\\ContentObserver\\Repository' => __DIR__ . '/../..' . '/classes/Repository.php',
         'Palasthotel\\WordPress\\ContentObserver\\Schedule' => __DIR__ . '/../..' . '/classes/Schedule.php',
         'Palasthotel\\WordPress\\ContentObserver\\Settings' => __DIR__ . '/../..' . '/classes/Settings.php',

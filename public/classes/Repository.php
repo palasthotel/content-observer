@@ -59,6 +59,42 @@ class Repository extends _Component {
 	}
 
 	/**
+	 * @param int $id
+	 *
+	 * @return Site|null
+	 */
+	public function getSite($id){
+		foreach ($this->getSites() as $site){
+			if($id === $site->id){
+				return $site;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param Site $site
+	 *
+	 * @return Site|null
+	 */
+	public function findSite($site){
+		$found = array_filter($this->getSites(),function($_site) use ($site){
+			return $_site->url === $site->url;
+		});
+		return count($found) ? $found[0] : null;
+	}
+
+	/**
+	 * @param Site $site
+	 *
+	 * @return bool|int
+	 */
+	public function setSite( $site ) {
+		$this->sitesCache = null;
+		return $this->sitesDB->set($site);
+	}
+
+	/**
 	 * @return Site[]
 	 */
 	public function getObservers(){
@@ -98,5 +134,7 @@ class Repository extends _Component {
 		$this->modificationsCache = [];
 		return $this->modificationsDB->setModification($modification);
 	}
+
+
 
 }

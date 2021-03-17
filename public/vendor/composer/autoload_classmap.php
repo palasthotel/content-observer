@@ -14,6 +14,7 @@ return array(
     'Palasthotel\\WordPress\\ContentObserver\\Modifications' => $baseDir . '/classes/Database/Modifications.php',
     'Palasthotel\\WordPress\\ContentObserver\\OnPostChange' => $baseDir . '/classes/OnPostChange.php',
     'Palasthotel\\WordPress\\ContentObserver\\REST' => $baseDir . '/classes/REST.php',
+    'Palasthotel\\WordPress\\ContentObserver\\RemoteRequest' => $baseDir . '/classes/RemoteRequest.php',
     'Palasthotel\\WordPress\\ContentObserver\\Repository' => $baseDir . '/classes/Repository.php',
     'Palasthotel\\WordPress\\ContentObserver\\Schedule' => $baseDir . '/classes/Schedule.php',
     'Palasthotel\\WordPress\\ContentObserver\\Settings' => $baseDir . '/classes/Settings.php',

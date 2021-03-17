@@ -28,7 +28,7 @@ class Sites extends _DB {
 			"id" => $site->id,
 			"site_url" => $site->url,
 			"site_api_key" => $site->api_key,
-			"relation_type" => $site->relationType,
+			"relation_type" => $site->relation_type,
 			"registration_time" => $site->registration_time,
 			"last_notification_time" => $site->last_notification_time,
 		];
@@ -73,7 +73,7 @@ class Sites extends _DB {
 			return Site::build( $row->site_url )
 			           ->setId( $row->id )
 			           ->setApiKey( $row->site_api_key )
-			           ->setRelationType( $row->site_type )
+			           ->setRelationType( $row->relation_type )
 			           ->setLastNotificationTime( $row->last_notification_time )
 			           ->setRegistrationTime( $row->registration_time );
 		}, $results );

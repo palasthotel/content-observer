@@ -24,9 +24,29 @@ class Settings extends _Component {
 	public function add_plugin_page()
 	{
 		// This page will be under "Settings"
-		add_options_page(
-			'Content sync',
-			'Content sync',
+        add_menu_page(
+          "Content Observer",
+          "Content Observer",
+            "manage_options",
+            Plugin::DOMAIN,
+            '',
+            "dashicons-update"
+        );
+		add_submenu_page(
+			Plugin::DOMAIN,
+			'Content Observer',
+			'Manage',
+			'manage_options',
+			Plugin::DOMAIN,
+			function(){
+				$this->plugin->assets->enqueueSettings();
+				echo "<div class='wrap'><div id='content-sync__sites'></div></div>";
+            }
+		);
+		add_submenu_page(
+		        Plugin::DOMAIN,
+			'Settings « Content Observer',
+			'Settings',
 			'manage_options',
 			Plugin::SETTINGS_PAGE,
 			array( $this, 'create_admin_page' )
@@ -41,7 +61,7 @@ class Settings extends _Component {
 	{
 		?>
 		<div class="wrap">
-			<h1>Content sync</h1>
+			<h1>Settings « Content Observer</h1>
 			<form method="post" action="options.php">
 				<?php
 				settings_fields( Plugin::DOMAIN );
@@ -77,16 +97,6 @@ class Settings extends _Component {
 			array( $this, 'api_key' ),
 			Plugin::SETTINGS_PAGE,
 			'security'
-		);
-
-		add_settings_section(
-			'content_sync_sites',
-			'Sites',
-			function(){
-                $this->plugin->assets->enqueueSettings();
-                echo "<div id='content-sync__sites'></div>";
-            },
-			Plugin::SETTINGS_PAGE
 		);
 
 	}
