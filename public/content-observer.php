@@ -19,6 +19,8 @@
 
 namespace Palasthotel\WordPress\ContentObserver;
 
+use Palasthotel\WordPress\ContentObserver\Logger\CLILogger;
+
 /**
  * @property string url
  * @property string path
@@ -28,6 +30,7 @@ namespace Palasthotel\WordPress\ContentObserver;
  * @property Assets assets
  * @property OnPostChange $onPostChange
  * @property RemoteRequest remoteRequest
+ * @property Tasks tasks
  */
 class Plugin {
 
@@ -62,15 +65,17 @@ class Plugin {
 
 		require_once dirname( __FILE__ ) . "/vendor/autoload.php";
 
-		$this->assets       = new Assets( $this );
-		$this->repo         = new Repository( $this );
-		$this->rest         = new REST( $this );
-		$this->settings     = new Settings( $this );
-		$this->remoteRequest = new RemoteRequest($this);
-		$this->onPostChange = new OnPostChange( $this );
+		$this->assets        = new Assets( $this );
+		$this->repo          = new Repository( $this );
+		$this->rest          = new REST( $this );
+		$this->settings      = new Settings( $this );
+		$this->remoteRequest = new RemoteRequest( $this );
+		$this->onPostChange  = new OnPostChange( $this );
+		$this->tasks         = new Tasks( $this );
 
-		if(class_exists("\WP_CLI")){
-			\WP_CLI::add_command('content-observer', new CLI($this));
+		if ( class_exists( "\WP_CLI" ) ) {
+			$this->tasks->setLogger( new CLILogger() );
+			\WP_CLI::add_command( 'content-observer', new CLI( $this ) );
 		}
 
 		register_activation_hook( __FILE__, array( $this, "activation" ) );

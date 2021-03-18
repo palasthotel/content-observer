@@ -8,16 +8,18 @@ namespace Palasthotel\WordPress\ContentObserver\Model;
  * @property string url
  * @property string api_key
  * @property int registration_time
- * @property null last_notification_time
+ * @property null|int last_notification_time
  * @property string $relation_type
  */
 class Site {
+
+	const MY_SITE = 0;
 
 	const OBSERVER = "observer";
 	const OBSERVABLE = "observable";
 
 	private function __construct( $url ) {
-		$this->id                     = null;
+		$this->id                     = static::MY_SITE;
 		$this->url                    = rtrim( $url, "/" ) . "/";
 		$this->api_key                = "";
 		$this->registration_time      = time();

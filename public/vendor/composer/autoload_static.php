@@ -24,6 +24,9 @@ class ComposerStaticInit0bbd900ba3bb80996da8ec5c9156e10a
         'Palasthotel\\WordPress\\ContentObserver\\Assets' => __DIR__ . '/../..' . '/classes/Assets.php',
         'Palasthotel\\WordPress\\ContentObserver\\CLI' => __DIR__ . '/../..' . '/classes/CLI.php',
         'Palasthotel\\WordPress\\ContentObserver\\ForeignPosts' => __DIR__ . '/../..' . '/classes/Database/ForeignPosts.php',
+        'Palasthotel\\WordPress\\ContentObserver\\Interfaces\\ILogger' => __DIR__ . '/../..' . '/classes/Interfaces/ILogger.php',
+        'Palasthotel\\WordPress\\ContentObserver\\Logger\\CLILogger' => __DIR__ . '/../..' . '/classes/Logger/CLILogger.php',
+        'Palasthotel\\WordPress\\ContentObserver\\Logger\\Logger' => __DIR__ . '/../..' . '/classes/Logger/Logger.php',
         'Palasthotel\\WordPress\\ContentObserver\\Model\\Modification' => __DIR__ . '/../..' . '/classes/Model/Modification.php',
         'Palasthotel\\WordPress\\ContentObserver\\Model\\Site' => __DIR__ . '/../..' . '/classes/Model/Site.php',
         'Palasthotel\\WordPress\\ContentObserver\\Modifications' => __DIR__ . '/../..' . '/classes/Database/Modifications.php',
@@ -34,6 +37,7 @@ class ComposerStaticInit0bbd900ba3bb80996da8ec5c9156e10a
         'Palasthotel\\WordPress\\ContentObserver\\Schedule' => __DIR__ . '/../..' . '/classes/Schedule.php',
         'Palasthotel\\WordPress\\ContentObserver\\Settings' => __DIR__ . '/../..' . '/classes/Settings.php',
         'Palasthotel\\WordPress\\ContentObserver\\Sites' => __DIR__ . '/../..' . '/classes/Database/Sites.php',
+        'Palasthotel\\WordPress\\ContentObserver\\Tasks' => __DIR__ . '/../..' . '/classes/Tasks.php',
         'Palasthotel\\WordPress\\ContentObserver\\_Component' => __DIR__ . '/../..' . '/classes/_Component.php',
         'Palasthotel\\WordPress\\ContentObserver\\_DB' => __DIR__ . '/../..' . '/classes/Database/_DB.php',
     );

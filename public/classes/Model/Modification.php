@@ -20,25 +20,23 @@ class Modification {
 	 *
 	 * @param string $content_id
 	 * @param string $content_type
-	 * @param int|null $timestamp
 	 */
-	private function __construct( $content_id, $content_type, $timestamp = null ) {
-		$this->site_id = 0; // 0 is this site
-		$this->content_id = $content_id;
+	private function __construct( $content_id, $content_type ) {
+		$this->site_id      = 0; // 0 is this site
+		$this->content_id   = $content_id;
 		$this->content_type = $content_type;
-		$this->setModified( $timestamp ? $timestamp : time() );
+		$this->setModified( time() );
 		$this->setType( static::CREATE );
 	}
 
 	/**
 	 * @param string $content_id
 	 * @param string $content_type
-	 * @param int|null $timestamp
 	 *
 	 * @return Modification
 	 */
-	public static function build($content_id, $content_type, $timestamp = null){
-		return new Modification($content_id, $content_type, $timestamp);
+	public static function build( $content_id, $content_type ) {
+		return new Modification( $content_id, $content_type );
 	}
 
 	/**
@@ -46,8 +44,9 @@ class Modification {
 	 *
 	 * @return $this
 	 */
-	public function setSiteId($site_id){
+	public function setSiteId( $site_id ) {
 		$this->site_id = $site_id;
+
 		return $this;
 	}
 
@@ -59,6 +58,7 @@ class Modification {
 
 	public function setType( $type ) {
 		$this->type = $type;
+
 		return $this;
 	}
 
@@ -74,12 +74,20 @@ class Modification {
 		return $this->setType( static::DELETE );
 	}
 
-	public function asArray(){
+	public static function fromArray( $arr ) {
+		return Modification::build( $arr["content_id"], $arr["content_type"] )
+		                   ->setModified( intval( $arr["modified"] ) )
+		                   ->setType( $arr["type"] )
+		                   ->setSiteId( intval( $arr["site_id"] ) );
+	}
+
+	public function asArray() {
 		return [
-			"content_id" => $this->content_id,
+			"site_id"      => $this->site_id,
+			"content_id"   => $this->content_id,
 			"content_type" => $this->content_type,
-			"type" => $this->type,
-			"modified" => $this->modified,
+			"type"         => $this->type,
+			"modified"     => $this->modified,
 		];
 	}
 }

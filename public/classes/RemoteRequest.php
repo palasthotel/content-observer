@@ -21,13 +21,17 @@ class RemoteRequest extends _Component {
 	}
 
 	/**
-	 * @param $url
-	 * @param $site_api_key
-	 * @param $data
+	 * @param string $url
+	 * @param string $site_api_key
+	 * @param array $data
 	 *
 	 * @return object|WP_Error
 	 */
 	public function post( $url, $site_api_key, $data ) {
+		error_log("url: ".$url);
+		error_log("api_key: ".$site_api_key);
+		error_log("data: ".json_encode($data));
+		error_log(add_query_arg( Plugin::REQUEST_PARAM_API_KEY, $site_api_key, $url ));
 		$response = wp_remote_post(
 			add_query_arg( Plugin::REQUEST_PARAM_API_KEY, $site_api_key, $url ),
 			[

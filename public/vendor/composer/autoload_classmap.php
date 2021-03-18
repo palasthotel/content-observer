@@ -9,6 +9,9 @@ return array(
     'Palasthotel\\WordPress\\ContentObserver\\Assets' => $baseDir . '/classes/Assets.php',
     'Palasthotel\\WordPress\\ContentObserver\\CLI' => $baseDir . '/classes/CLI.php',
     'Palasthotel\\WordPress\\ContentObserver\\ForeignPosts' => $baseDir . '/classes/Database/ForeignPosts.php',
+    'Palasthotel\\WordPress\\ContentObserver\\Interfaces\\ILogger' => $baseDir . '/classes/Interfaces/ILogger.php',
+    'Palasthotel\\WordPress\\ContentObserver\\Logger\\CLILogger' => $baseDir . '/classes/Logger/CLILogger.php',
+    'Palasthotel\\WordPress\\ContentObserver\\Logger\\Logger' => $baseDir . '/classes/Logger/Logger.php',
     'Palasthotel\\WordPress\\ContentObserver\\Model\\Modification' => $baseDir . '/classes/Model/Modification.php',
     'Palasthotel\\WordPress\\ContentObserver\\Model\\Site' => $baseDir . '/classes/Model/Site.php',
     'Palasthotel\\WordPress\\ContentObserver\\Modifications' => $baseDir . '/classes/Database/Modifications.php',
@@ -19,6 +22,7 @@ return array(
     'Palasthotel\\WordPress\\ContentObserver\\Schedule' => $baseDir . '/classes/Schedule.php',
     'Palasthotel\\WordPress\\ContentObserver\\Settings' => $baseDir . '/classes/Settings.php',
     'Palasthotel\\WordPress\\ContentObserver\\Sites' => $baseDir . '/classes/Database/Sites.php',
+    'Palasthotel\\WordPress\\ContentObserver\\Tasks' => $baseDir . '/classes/Tasks.php',
     'Palasthotel\\WordPress\\ContentObserver\\_Component' => $baseDir . '/classes/_Component.php',
     'Palasthotel\\WordPress\\ContentObserver\\_DB' => $baseDir . '/classes/Database/_DB.php',
 );

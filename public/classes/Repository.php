@@ -73,13 +73,13 @@ class Repository extends _Component {
 	}
 
 	/**
-	 * @param Site $site
+	 * @param string $url
 	 *
 	 * @return Site|null
 	 */
-	public function findSite($site){
-		$found = array_filter($this->getSites(),function($_site) use ($site){
-			return $_site->url === $site->url;
+	public function findSiteByUrl($url){
+		$found = array_filter($this->getSites(),function($site) use ($url){
+			return $site->url === $url;
 		});
 		return count($found) ? $found[0] : null;
 	}
@@ -117,19 +117,37 @@ class Repository extends _Component {
 	}
 
 	/**
-	 * @param int|null $since null means own mods
+	 * @param int $since null means own mods
+	 *
+	 * @param int $site_id
+	 *
+	 * @param int $limit
+	 *
+	 * @param int $pageIndex
 	 *
 	 * @return Modification[]
 	 */
-	public function getModifications($site_id, $since){
-		$since = null === $since ? 0 : $since;
+	public function getModifications($since = 0, $site_id = Site::MY_SITE, $limit = 100, $pageIndex = 0){
 		if(!isset($this->modificationsCache[$since])){
 
-			$this->modificationsCache[$since] = $this->modificationsDB->getModifications($site_id, $since);
+			$this->modificationsCache[$since] = $this->modificationsDB->getModifications($since, $site_id, $limit, $pageIndex);
 		}
 		return $this->modificationsCache[$since];
 	}
 
+	/**
+	 * @param int $since
+	 * @param int $site_id
+	 */
+	public function countModifications( $since, $site_id = Site::MY_SITE ) {
+		return $this->modificationsDB->countModifications($since, $site_id);
+	}
+
+	/**
+	 * @param Modification $modification
+	 *
+	 * @return bool|int
+	 */
 	public function setModification($modification){
 		$this->modificationsCache = [];
 		return $this->modificationsDB->setModification($modification);

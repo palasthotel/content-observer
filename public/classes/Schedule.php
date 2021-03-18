@@ -23,7 +23,7 @@ class Schedule extends _Component {
 	public function notify_observers(){
 		$obervers = $this->plugin->repo->getObservers();
 		foreach ($obervers as $observer){
-			$mods =$this->plugin->repo->getModifications($observer->id, $observer->last_notification_time);
+			$mods =$this->plugin->repo->getModifications($observer->last_notification_time, $observer->id);
 			wp_remote_post(
 				$observer->url."/wp-json/".REST::NAMESPACE."/modifications",
 				[

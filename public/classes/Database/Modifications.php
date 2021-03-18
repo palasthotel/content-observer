@@ -16,18 +16,6 @@ class Modifications extends _DB {
 		parent::__construct( "content_observer_modifications" );
 	}
 
-	public function setCreate( $post_id ) {
-		return $this->setModification( Modification::build( $post_id )->create() );
-	}
-
-	public function setUpdate( $post_id ) {
-		return $this->setModification( Modification::build( $post_id )->update() );
-	}
-
-	public function setDelete( $post_id ) {
-		return $this->setModification( Modification::build( $post_id )->delete() );
-	}
-
 	/**
 	 * @param Modification $modification
 	 *
@@ -47,25 +35,56 @@ class Modifications extends _DB {
 	}
 
 	/**
-	 * @param null|number $site_id
-	 * @param number $since
+	 * @param int $since
+	 * @param int $site_id
 	 *
-	 * @return array|object|null
+	 * @param int|null $limit
+	 * @param int|null $pageIndex
+	 *
+	 * @return Modification[]
 	 */
-	public function getModifications( $site_id, $since ) {
-		$site_id_query = null === $site_id ? "site_id IS NULL" : "site_id = " . intval( $site_id );
-		$results       = $this->wpdb->get_results(
+	public function getModifications( $since, $site_id, $limit, $pageIndex ) {
+
+		$limitQuery = "";
+		$hasValidLimit = is_int($limit) && $limit > 0;
+		$hasValidPageIndex = is_int($pageIndex) && $pageIndex >= 0;
+		if(
+			$hasValidLimit &&
+			$hasValidPageIndex
+		){
+			$offset =$pageIndex*$limit;
+			$limitQuery = "LIMIT $offset, $limit";
+		} else if($hasValidLimit){
+			$limitQuery = "LIMIT $limit";
+		}
+
+		$results = $this->wpdb->get_results(
 			$this->wpdb->prepare(
-				"SELECT site_id, content_id, content_type, mod_time, mod_type FROM $this->table WHERE $site_id_query AND mod_time >= %d",
+				"SELECT site_id, content_id, content_type, mod_time, mod_type FROM $this->table WHERE site_id = %d AND mod_time >= %d $limitQuery",
+				$site_id,
 				$since
 			)
 		);
 
 		return array_map( function ( $row ) {
-			return Modification::build( $row->content_id, $row->content_type, $row->mod_time )
+			return Modification::build( $row->content_id, $row->content_type )
+			                   ->setModified( $row->mod_time )
 			                   ->setSiteId( $row->site_id )
 			                   ->setType( $row->mod_type );
 		}, $results );
+	}
+
+	/**
+	 * @param int $since
+	 * @param int $site_id
+	 *
+	 * @return int
+	 */
+	public function countModifications( $since, $site_id){
+		$count = $this->wpdb->get_var(
+			$this->wpdb->prepare("SELECT count(site_id) FROM $this->table WHERE site_id = %d AND mod_time >= %d", $site_id, $since)
+		);
+		return intval($count);
 	}
 
 	/**
