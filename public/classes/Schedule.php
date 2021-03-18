@@ -12,40 +12,30 @@ class Schedule extends _Component {
 			if(!wp_next_scheduled( Plugin::ACTION_SCHEDULE_NOTIFY_OBSERVERS )){
 				wp_schedule_event( time(), 'hourly', Plugin::ACTION_SCHEDULE_NOTIFY_OBSERVERS);
 			}
-			if(!wp_next_scheduled( Plugin::ACTION_SCHEDULE_NOTIFY_OBSERVABLES)){
-				wp_schedule_event( time(), 'hourly', Plugin::ACTION_SCHEDULE_NOTIFY_OBSERVABLES);
+			if(!wp_next_scheduled( Plugin::ACTION_SCHEDULE_START_MODIFICATIONS_HOOK)){
+				wp_schedule_event( time(), 'hourly', Plugin::ACTION_SCHEDULE_START_MODIFICATIONS_HOOK);
 			}
 		});
 		add_action(Plugin::ACTION_SCHEDULE_NOTIFY_OBSERVERS, [$this, "notify_observers"]);
-		add_action(Plugin::ACTION_SCHEDULE_NOTIFY_OBSERVABLES, [$this, "notify_observables"]);
+		add_action(Plugin::ACTION_SCHEDULE_START_MODIFICATIONS_HOOK, [$this, "start_modifications_hook"]);
 	}
 
 	public function notify_observers(){
-		$obervers = $this->plugin->repo->getObservers();
-		foreach ($obervers as $observer){
-			$mods =$this->plugin->repo->getModifications($observer->last_notification_time, $observer->id);
-			wp_remote_post(
-				$observer->url."/wp-json/".REST::NAMESPACE."/modifications",
-				[
-					"body" => [
-						"mods" => array_map(function($mod){
-							return array_merge(
-								$mod->asArray(),
-								["post_type" => get_post_type($mod->post_id)]
-							);
-						}, $mods),
-					]
-				]
-			);
-		}
-		// fetch all changes since last run
-		// notify observers about changes
+		$this->plugin->tasks->notify();
 	}
 
 	public function notify_observables(){
-		$observables = $this->plugin->repo->getObservables();
-		// check if observables is reachable for content-sync
-		// remind them that we are watching for changes
+		$this->plugin->tasks->fetch();
+	}
+
+	public function start_modifications_hook(){
+		$last_hook_run = intval(get_option(Plugin::OPTION_LAST_MODIFICATIONS_HOOK_RUN, 0));
+		$runTime = time();
+		foreach ($this->plugin->repo->getSites() as $site){
+			$mods = $this->plugin->repo->getModifications($last_hook_run, $site->id);
+			do_action(Plugin::ACTION_ON_MODIFICATIONS, $mods, $site);
+		}
+		update_option(Plugin::OPTION_LAST_MODIFICATIONS_HOOK_RUN, $runTime);
 	}
 
 }

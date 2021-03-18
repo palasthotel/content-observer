@@ -8,6 +8,7 @@ use Palasthotel\WordPress\ContentObserver\Interfaces\ILogger;
 use Palasthotel\WordPress\ContentObserver\Logger\Logger;
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
 use Palasthotel\WordPress\ContentObserver\Model\Site;
+use WP_Error;
 
 /**
  * @property ILogger logger
@@ -24,6 +25,22 @@ class Tasks extends _Component {
 	 */
 	public function setLogger( $logger ) {
 		$this->logger = $logger;
+	}
+
+	private function getTaskIdOptionKey($taskId){
+		return Plugin::DOMAIN."_task_".$taskId."_is_running";
+	}
+
+	private function isTaskRunning($taskId){
+		return get_option($this->getTaskIdOptionKey($taskId), false) === "true";
+	}
+
+	private function setTaskIsRunning($taskId, $isRunning){
+		if($isRunning){
+			update_option($this->getTaskIdOptionKey($taskId), "true");
+		} else {
+			delete_option($this->getTaskIdOptionKey($taskId));
+		}
 	}
 
 	/**
@@ -44,9 +61,9 @@ class Tasks extends _Component {
 
 		$success = [];
 		foreach ( $sites as $site ) {
-			$restUrl = $rest->getPingUrl( $site );
+			$restUrl = $rest->getPingUrl( $site->url );
 			$result  = $request->get( $restUrl, $site->api_key );
-			if ( $result instanceof \WP_Error ) {
+			if ( $result instanceof WP_Error ) {
 				$this->logger->error( "Error with site : $restUrl -> {$result->get_error_message()}" );
 				$success[ $site->id ] = false;
 				continue;
@@ -63,44 +80,52 @@ class Tasks extends _Component {
 	/**
 	 * @param null|int $site_id all or one specific site
 	 *
-	 * @return bool
+	 * @return bool|WP_Error
 	 */
 	public function connect( $site_id = null ) {
 		$rest    = $this->plugin->rest;
 		$request = $this->plugin->remoteRequest;
 
+		$taskId = "connect";
+		if($this->isTaskRunning($taskId)){
+			return new WP_Error("Task is already running");
+		}
+		$this->setTaskIsRunning($taskId, true);
+
 		$sites = $this->getSites( $site_id );
 
 		if ( null === $sites ) {
+			$this->setTaskIsRunning($taskId, false);
 			$this->logger->error( "Could not find site with id " . $site_id );
-
 			return false;
 		}
 
 		foreach ( $sites as $site ) {
-			$response = $request->post( $rest->getConnectUrl( $site ), $site->api_key, [
+			$this->logger->line( "Update connection with $site->url..." );
+			$response = $request->post( $rest->getConnectUrl( $site->url ), $site->api_key, [
 				"site_url"        => get_site_url(),
 				"foreign_api_key" => $this->plugin->settings->getApiKey(),
 				"relation_type"   => $site->relation_type === Site::OBSERVER ? Site::OBSERVABLE : Site::OBSERVER,
 			] );
-			if ( $response instanceof \WP_Error ) {
+			if ( $response instanceof WP_Error ) {
+				$this->setTaskIsRunning($taskId, false);
 				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url, api_key: $site->api_key -> {$response->get_error_message()}" );
-
 				return false;
 			}
 			if ( ! is_object( $response ) ) {
+				$this->setTaskIsRunning($taskId, false);
 				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url, api_key: $site->api_key -> response is no object" );
-
 				return false;
 			} else if ( ! isset( $response->success ) || ! $response->success ) {
+				$this->setTaskIsRunning($taskId, false);
 				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url, api_key: $site->api_key -> response was no success " . json_encode( $response ) );
-
 				return false;
 			}
 			$this->logger->line( "Connection with $site->url was updated." );
 		}
 
 		$this->logger->success( "All sites connection updated." );
+		$this->setTaskIsRunning($taskId, false);
 
 		return true;
 	}
@@ -108,9 +133,15 @@ class Tasks extends _Component {
 	/**
 	 * @param null|int $site_id
 	 *
-	 * @return boolean
+	 * @return bool|WP_Error
 	 */
 	public function notify( $site_id = null ) {
+
+		$taskId = "notify";
+		if($this->isTaskRunning($taskId)){
+			return new WP_Error("Task is already running");
+		}
+		$this->setTaskIsRunning($taskId, true);
 
 		$repo      = $this->plugin->repo;
 		$rest      = $this->plugin->rest;
@@ -142,26 +173,29 @@ class Tasks extends _Component {
 			foreach ( $chunks as $chunk ) {
 				$this->logger->line( "Send Chunk: " . json_encode( $chunk ) );
 				$response = $request->post(
-					$rest->getModificationsUrl( $observer ),
+					$rest->getModificationsUrl( $observer->url ),
 					$observer->api_key,
 					[
 						"site_url" => $mySite->url,
 						"mods"     => $chunk,
 					]
 				);
-				if ( $response instanceof \WP_Error ) {
-					$this->logger->error( $response->get_error_message() );
 
+				$this->logger->line(json_encode($response));
+				if ( $response instanceof WP_Error ) {
+					$this->setTaskIsRunning($taskId, false);
+					$this->logger->error( $response->get_error_message() );
 					return false;
 				} else if ( ! isset( $response->success ) || ! $response->success ) {
+					$this->setTaskIsRunning($taskId, false);
 					$this->logger->error( "POST notifications has success response " . json_encode( $response ) );
-
 					return false;
 				}
 			}
 			$repo->setSite( $observer->setLastNotificationTime( $runTime ) );
 		}
 
+		$this->setTaskIsRunning($taskId, false);
 		return true;
 	}
 
@@ -173,9 +207,9 @@ class Tasks extends _Component {
 	 * @return boolean[]
 	 */
 	public function fetch(
-		$site_id,
-		$allModifications,
-		$numberOfModsPerRequest
+		$site_id = null,
+		$allModifications = false,
+		$numberOfModsPerRequest = 100
 	) {
 		$repo        = $this->plugin->repo;
 		$rest        = $this->plugin->rest;
@@ -192,7 +226,7 @@ class Tasks extends _Component {
 
 			$this->logger->line( "Fetch $period modifications from Site $observable->id -> $observable->url" );
 
-			$url = $rest->getModificationsUrl( $observable );
+			$url = $rest->getModificationsUrl( $observable->url );
 			$page = 1;
 			do {
 
@@ -210,7 +244,7 @@ class Tasks extends _Component {
 
 				$this->logger->line("Fetch ".json_encode($response));
 
-				if ( $response instanceof \WP_Error ) {
+				if ( $response instanceof WP_Error ) {
 					$this->logger->error( $response->get_error_message() );
 					$success[ $observable->id ] = false;
 					break;

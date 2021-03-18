@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Palasthotel\WordPress\ContentObserver;
+namespace Palasthotel\WordPress\ContentObserver\Database;
 
 use Palasthotel\WordPress\ContentObserver\Model\Site;
 use wpdb;
@@ -34,7 +34,7 @@ class Sites extends _DB {
 		];
 		$format = ["%d","%s","%s","%s","%d","%d"];
 
-		if(null !== $site->id){
+		if(null !== $site->id && $site->id > 0){
 			return $this->wpdb->update(
 				$this->table,
 				$args,
@@ -50,6 +50,15 @@ class Sites extends _DB {
 			$args,
 			$format
 		);
+	}
+
+	/**
+	 * @param number $site_id
+	 *
+	 * @return bool|int
+	 */
+	public function delete( $site_id ) {
+		return $this->wpdb->delete($this->table, ["id" => $site_id], ["%d"]);
 	}
 
 	/**
@@ -89,7 +98,7 @@ class Sites extends _DB {
 			 id int(8) unsigned auto_increment,
 			 site_url varchar(190) NOT NULL,
 			 site_api_key text NOT NULL,
-			 relation_type ENUM('observer', 'observable') NOT NULL,
+			 relation_type ENUM('observer', 'observable', 'both') NOT NULL,
 			 registration_time bigint(20) NOT NULL,
 			 last_notification_time bigint(20) NOT NULL DEFAULT 0,
 			 primary key (id),
@@ -98,6 +107,5 @@ class Sites extends _DB {
 			 key (last_notification_time)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;" );
 	}
-
 
 }

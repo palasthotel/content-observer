@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Palasthotel\WordPress\ContentObserver;
+namespace Palasthotel\WordPress\ContentObserver\Database;
 
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
 use wpdb;
@@ -32,6 +32,15 @@ class Modifications extends _DB {
 				"mod_time"     => $modification->modified,
 			], [ "%d", "%s", "%s", "%s", "%d" ]
 		);
+	}
+
+	/**
+	 * @param int $site_id
+	 *
+	 * @return bool|int
+	 */
+	public function deleteBySiteId( $site_id ) {
+		return $this->wpdb->delete($this->table, ["site_id"=>$site_id], ["%d"]);
 	}
 
 	/**
@@ -107,5 +116,7 @@ class Modifications extends _DB {
 			 key modification_time_and_type (mod_time, mod_type)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;" );
 	}
+
+
 
 }

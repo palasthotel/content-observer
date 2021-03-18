@@ -36,19 +36,37 @@ class Plugin {
 
 	const DOMAIN = "content-observer";
 
-	const ACTION_SCHEDULE_NOTIFY_OBSERVERS = "content_observer_notify_observers";
-	const ACTION_SCHEDULE_NOTIFY_OBSERVABLES = "content_observer_notify_observables";
+	// ----------------------------------------------------------------------
+	// actions
+	// ----------------------------------------------------------------------
+	const ACTION_ON_MODIFICATIONS = "content_observer_on_modifications";
 
-	const SETTINGS_PAGE = "content-observer-settings";
+	// ----------------------------------------------------------------------
+	// schedules
+	// ----------------------------------------------------------------------
+	const ACTION_SCHEDULE_NOTIFY_OBSERVERS = "content_observer_notify_observers"; // notify external sites
+	const ACTION_SCHEDULE_START_MODIFICATIONS_HOOK = "content_observer_start_modifications_hook"; // notify internally
 
-	const REQUEST_PARAM_API_KEY = "content_observer_api_key";
-
-	const ACTION_ON_UPDATE = "content_observer_on_update";
-
+	// ----------------------------------------------------------------------
+	// options
+	// ----------------------------------------------------------------------
 	const OPTION_API_KEY = "_content_observer_api_key";
+	const OPTION_LAST_MODIFICATIONS_HOOK_RUN = "_content_observer_last_modifications_hook_run";
 
+	// ----------------------------------------------------------------------
+	// asset handles
+	// ----------------------------------------------------------------------
 	const HANDLE_SETTINGS_JS = "content-observer-settings-js";
 
+	// ----------------------------------------------------------------------
+	// other constants
+	// ----------------------------------------------------------------------
+	const SETTINGS_PAGE = "content-observer-settings";
+	const REQUEST_PARAM_API_KEY = "content_observer_api_key";
+
+	/**
+	 * Plugin constructor.
+	 */
 	private function __construct() {
 
 		/**

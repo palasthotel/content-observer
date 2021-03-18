@@ -1,10 +1,22 @@
-import React from "react";
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
+import {useSiteTest} from "../hooks/use-api";
 
 const SiteRow = ({site, onDelete, hasDeleteFlag, onUndelete})=>{
-    const notificationDate = new Date(site.last_notification_time * 1000);
-    const registrationDate = new Date(site.registration_time * 1000);
+
+    const {isSuccess, isTesting, testAgain} = useSiteTest(site.url, site.api_key);
+
+    let notificationDateString = "---";
+    if(site.last_notification_time){
+        const notificationDate = new Date(site.last_notification_time * 1000);
+        notificationDateString = format(notificationDate,'Pp',{locale:de})
+    }
+
+    let registrationDateString = "---";
+    if(site.registration_time){
+        const registrationDate = new Date(site.registration_time * 1000);
+        registrationDateString = format(registrationDate,'Pp',{locale:de});
+    }
 
     const titleStyle = hasDeleteFlag? {textDecoration: "line-through"} : {};
 
@@ -34,8 +46,19 @@ const SiteRow = ({site, onDelete, hasDeleteFlag, onUndelete})=>{
 
             </div>
         </td>
-        <td>{format(notificationDate,'Pp',{locale:de})}</td>
-        <td>{format(registrationDate,'Pp',{locale:de})}</td>
+        <td>{notificationDateString}</td>
+        <td>{registrationDateString}</td>
+        <td>
+            <div>
+                <a className="button button-secondary" onClick={()=>testAgain()}>
+                    Test connection {isTesting ?
+                        <span className="spinner is-active" style={{float:"none", margin: 0, width: 15, height: 15, backgroundSize:"contain"}} />:
+                        <span>{isSuccess ? "✅": "🚨"}</span>
+                    }
+                </a>
+            </div>
+            {!isSuccess && !isTesting && <i>Is this plugin installed and activated on the foreign site? Is the api key correct?</i>}
+        </td>
     </tr>
 }
 
@@ -46,12 +69,13 @@ const SitesTable = ({sites, isLoading, deletes, onDelete, onUndelete})=>{
                 <td>URL / API Key</td>
                 <td style={{width: 120}}>Last notification</td>
                 <td style={{width: 120}}>Registration</td>
+                <td style={{width: 140}}></td>
             </tr>
         </thead>
         <tbody style={{minHeight: 20}}>
 
             {sites.map(s=> <SiteRow
-                key={s.id}
+                key={s.url}
                 site={s}
                 hasDeleteFlag={deletes.includes(s.id)}
                 onDelete={()=> onDelete(s)}

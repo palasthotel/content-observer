@@ -4,8 +4,10 @@
 namespace Palasthotel\WordPress\ContentObserver;
 
 
-use Palasthotel\WordPress\ContentObserver\Model\Site;
+use Palasthotel\WordPress\ContentObserver\Database\Modifications;
+use Palasthotel\WordPress\ContentObserver\Database\Sites;
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
+use Palasthotel\WordPress\ContentObserver\Model\Site;
 
 class Repository extends _Component {
 
@@ -78,10 +80,10 @@ class Repository extends _Component {
 	 * @return Site|null
 	 */
 	public function findSiteByUrl($url){
-		$found = array_filter($this->getSites(),function($site) use ($url){
-			return $site->url === $url;
-		});
-		return count($found) ? $found[0] : null;
+		$found = array_values(array_filter($this->getSites(),function($site) use ($url){
+			return $site->url === rtrim($url,"/")."/";
+		}));
+		return count($found) > 0 ? $found[0] : null;
 	}
 
 	/**
@@ -153,6 +155,17 @@ class Repository extends _Component {
 		return $this->modificationsDB->setModification($modification);
 	}
 
+	/**
+	 * @param int $site_id
+	 *
+	 * @return bool|int
+	 */
+	public function deleteSite( $site_id ) {
+		$this->sitesCache = null;
+		unset($this->modificationsCache[$site_id]);
+		$this->modificationsDB->deleteBySiteId($site_id);
+		return $this->sitesDB->delete($site_id);
+	}
 
 
 }

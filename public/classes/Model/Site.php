@@ -17,6 +17,7 @@ class Site {
 
 	const OBSERVER = "observer";
 	const OBSERVABLE = "observable";
+	const BOTH = "both";
 
 	private function __construct( $url ) {
 		$this->id                     = static::MY_SITE;
@@ -70,11 +71,11 @@ class Site {
 	}
 
 	public function isObservable() {
-		return static::OBSERVABLE === $this->relation_type;
+		return static::OBSERVABLE === $this->relation_type || static::BOTH == $this->relation_type;
 	}
 
 	public function isObserver() {
-		return static::OBSERVER === $this->relation_type;
+		return static::OBSERVER === $this->relation_type || static::BOTH == $this->relation_type;
 	}
 
 	public function asArray() {

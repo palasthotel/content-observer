@@ -24,39 +24,39 @@ class REST extends _Component {
 	}
 
 	/**
-	 * @param Site $site
+	 * @param string $site_url
 	 *
 	 * @return string
 	 */
-	public function getRestBaseUrl( $site ) {
-		return trim( $site->url ) . "/" . rest_get_url_prefix() . "/" . self::NAMESPACE;
+	public function getRestBaseUrl( $site_url ) {
+		return trim( $site_url ) . "/" . rest_get_url_prefix() . "/" . self::NAMESPACE;
 	}
 
 	/**
-	 * @param Site $site
+	 * @param string $site_url
 	 *
 	 * @return string
 	 */
-	public function getPingUrl( $site ) {
-		return $this->getRestBaseUrl( $site ) . "/ping";
+	public function getPingUrl( $site_url ) {
+		return $this->getRestBaseUrl( $site_url ) . "/ping";
 	}
 
 	/**
-	 * @param Site $site
+	 * @param string $site_url
 	 *
 	 * @return string
 	 */
-	public function getConnectUrl( $site ) {
-		return $this->getRestBaseUrl( $site ) . "/connect";
+	public function getConnectUrl( $site_url ) {
+		return $this->getRestBaseUrl( $site_url ) . "/connect";
 	}
 
 	/**
-	 * @param Site $site
+	 * @param string $site_url
 	 *
 	 * @return string
 	 */
-	public function getModificationsUrl( $site ) {
-		return $this->getRestBaseUrl( $site ) . "/modifications";
+	public function getModificationsUrl( $site_url ) {
+		return $this->getRestBaseUrl( $site_url ) . "/modifications";
 	}
 
 	public function init_rest_api() {
@@ -76,14 +76,57 @@ class REST extends _Component {
 			'/sites',
 			array(
 				'methods'             => "GET",
-				'callback'            => function () {
-					return array_map( function ( $site ) {
-						return $site->asArray();
-					}, $this->plugin->repo->getSites() );
-				},
+				'callback'            => [ $this, 'get_sites' ],
 				'permission_callback' => function ( WP_REST_Request $request ) {
 					return current_user_can( 'manage_options' );
 				},
+			)
+		);
+		register_rest_route(
+			static::NAMESPACE,
+			'/sites',
+			array(
+				'methods'             => "POST",
+				'callback'            => [ $this, 'post_sites' ],
+				'permission_callback' => function ( WP_REST_Request $request ) {
+					return current_user_can( 'manage_options' );
+				},
+				'args'                => [
+					"dirty_sites" => array(
+						'validate_callback' => function ( $value, $request, $param ) {
+							if ( ! is_array( $value ) ) {
+								return false;
+							}
+
+							foreach ($value as $site){
+								if(!isset($site["id"]) && $site["id"] !== null) return false;
+								if(intval($site["id"]) < 0) return false;
+								if(!isset($site["url"]) || !filter_var( $site["url"], FILTER_VALIDATE_URL )) return false;
+								if(!isset($site["api_key"]) || empty($site["api_key"])) return false;
+								if(!isset($site["relation_type"])) return false;
+								if(!in_array($site["relation_type"], [Site::OBSERVER, Site::OBSERVABLE, Site::BOTH])) return false;
+							}
+
+							return true;
+						},
+						'sanitize_callback' => function ( $value, $request, $param ) {
+							return array_map(function($item){
+								$item["url"] = esc_url( $item["url"] );
+								return $item;
+							}, $value);
+						},
+					),
+					"deletes" => array(
+						'validate_callback' => function ( $value, $request, $param ) {
+							if ( ! is_array( $value ) ) {
+								return false;
+							}
+							return array_filter($value, function($int){
+								return "".$int === intval($int)."";
+							});
+						},
+					),
+				]
 			)
 		);
 		register_rest_route(
@@ -224,6 +267,51 @@ class REST extends _Component {
 		return [ "response" => "pong" ];
 	}
 
+	public function get_sites(WP_REST_Request $request ) {
+		return array_map( function ( $site ) {
+			return $site->asArray();
+		}, $this->plugin->repo->getSites() );
+	}
+
+	public function post_sites( WP_REST_Request $request ) {
+
+		// modify sites
+
+		$dirtySites = $request->get_param("dirty_sites");
+		$deletes = $request->get_param("deletes");
+
+		foreach ($dirtySites as $site){
+			error_log(json_encode($site));
+			if(!isset($site["id"]) || empty($site["id"]) || intval($site["id"]) <= 0){
+				error_log("find: ".$site["url"]);
+				$siteDb = $this->plugin->repo->findSiteByUrl($site["url"]);
+				if($siteDb instanceof Site){
+					error_log("error response");
+					return new \WP_REST_Response([
+						"error" => true,
+						"message" => "Site with url $siteDb->url already exists.",
+						"site" => $siteDb->asArray(),
+					], 401);
+				}
+			}
+
+			$site = Site::build($site["url"])
+				->setId($site["id"])
+				->setApiKey($site["api_key"])
+			    ->setRelationType($site["relation_type"])
+				->setRegistrationTime(time());
+
+			$this->plugin->repo->setSite($site);
+
+		}
+
+		foreach ($deletes as $site_id){
+			$this->plugin->repo->deleteSite(intval($site_id));
+		}
+
+		return $this->get_sites($request);
+	}
+
 	public function connect( WP_REST_Request $request ) {
 		$siteUrl       = $request->get_param( "site_url" );
 		$foreignApiKey = $request->get_param( "foreign_api_key" );
@@ -259,7 +347,6 @@ class REST extends _Component {
 		$site     = $this->plugin->repo->findSiteByUrl( $site_url );
 		if ( null === $site ) {
 			error_log( "Site not found to set modifications for $site_url" );
-
 			return new \WP_REST_Response( [
 				"success" => false,
 				"message" => "Site not found"

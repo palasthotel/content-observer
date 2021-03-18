@@ -18,6 +18,8 @@ class Assets extends _Component {
 			"ContentSync",
 			[
 				"apiNamespace" => REST::NAMESPACE,
+				"pingUrlApiKeyParam" => Plugin::REQUEST_PARAM_API_KEY,
+				"pingUrl" => $this->plugin->rest->getPingUrl(""),
 			]
 		);
 	}

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Palasthotel\WordPress\ContentObserver;
+namespace Palasthotel\WordPress\ContentObserver\Database;
 
 use wpdb;
 
