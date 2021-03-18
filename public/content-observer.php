@@ -31,10 +31,16 @@ use Palasthotel\WordPress\ContentObserver\Logger\CLILogger;
  * @property OnPostChange $onPostChange
  * @property RemoteRequest remoteRequest
  * @property Tasks tasks
+ * @property Schedule schedule
  */
 class Plugin {
 
 	const DOMAIN = "content-observer";
+
+	// ----------------------------------------------------------------------
+	// filters
+	// ----------------------------------------------------------------------
+	const FILTER_REMOTE_REQUEST_HEADER = "content_observer_remote_request_header";
 
 	// ----------------------------------------------------------------------
 	// actions
@@ -89,7 +95,9 @@ class Plugin {
 		$this->settings      = new Settings( $this );
 		$this->remoteRequest = new RemoteRequest( $this );
 		$this->onPostChange  = new OnPostChange( $this );
+		$this->schedule      = new Schedule( $this );
 		$this->tasks         = new Tasks( $this );
+
 
 		if ( class_exists( "\WP_CLI" ) ) {
 			$this->tasks->setLogger( new CLILogger() );
@@ -134,4 +142,4 @@ class Plugin {
 
 Plugin::instance();
 
-require_once dirname(__FILE__)."/public-functions.php";
+require_once dirname( __FILE__ ) . "/public-functions.php";

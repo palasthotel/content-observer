@@ -107,7 +107,7 @@ class CLI {
 		Plugin::instance()->tasks->fetch(
 			isset($assoc_args["site_id"]) ? intval($assoc_args["site_id"]) : null,
 			isset($assoc_args["full"]) && "true" === $assoc_args["full"],
-			isset($assoc_args["mods_per_request"]) && intval($assoc_args["mods_per_request"]) > 0 ? intval($assoc_args["mods_per_request"]) : 100,
+			isset($assoc_args["mods_per_request"]) && intval($assoc_args["mods_per_request"]) > 0 ? intval($assoc_args["mods_per_request"]) : 100
 		);
 	}
 

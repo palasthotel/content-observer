@@ -107,7 +107,7 @@ class Modifications extends _DB {
 			 content_id varchar (50) NOT NULL,
 			 content_type varchar(50) NOT NULL,
 			 mod_type varchar(10) NOT NULL,
-			 mod_time bigint(20) DEFAULT NOW(),
+			 mod_time bigint(20) NOT NULL,
 			 primary key content_on_site (site_id, content_id, content_type),
 			 key (content_id),			 
 			 key (content_type),
