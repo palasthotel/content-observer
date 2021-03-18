@@ -281,12 +281,9 @@ class REST extends _Component {
 		$deletes = $request->get_param("deletes");
 
 		foreach ($dirtySites as $site){
-			error_log(json_encode($site));
 			if(!isset($site["id"]) || empty($site["id"]) || intval($site["id"]) <= 0){
-				error_log("find: ".$site["url"]);
 				$siteDb = $this->plugin->repo->findSiteByUrl($site["url"]);
 				if($siteDb instanceof Site){
-					error_log("error response");
 					return new \WP_REST_Response([
 						"error" => true,
 						"message" => "Site with url $siteDb->url already exists.",
@@ -346,7 +343,6 @@ class REST extends _Component {
 		$site_url = $request->get_param( "site_url" );
 		$site     = $this->plugin->repo->findSiteByUrl( $site_url );
 		if ( null === $site ) {
-			error_log( "Site not found to set modifications for $site_url" );
 			return new \WP_REST_Response( [
 				"success" => false,
 				"message" => "Site not found"
