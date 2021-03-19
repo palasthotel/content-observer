@@ -15,11 +15,13 @@ class Assets extends _Component {
 		);
 		wp_localize_script(
 			Plugin::HANDLE_SETTINGS_JS,
-			"ContentSync",
+			"ContentObserver",
 			[
+				"apiKey" => $this->plugin->settings->api_key(),
 				"apiNamespace" => REST::NAMESPACE,
 				"pingUrlApiKeyParam" => Plugin::REQUEST_PARAM_API_KEY,
 				"pingUrl" => $this->plugin->rest->getPingUrl(""),
+				"customRequestHeaders" => $this->plugin->remoteRequest->getHeaders(),
 			]
 		);
 	}

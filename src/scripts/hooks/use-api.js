@@ -1,5 +1,5 @@
 import {useEffect, useState} from "@wordpress/element";
-import {fetchSites, getTestSite, postSites} from "../data/api";
+import {fetchSites, getTestSite, getTestSiteById, postSites} from "../data/api";
 import {isValidHttpUrl} from "../data/url";
 
 export const useSites = () => {
@@ -71,6 +71,31 @@ export const useSiteTest = (site_url, site_api_key) => {
         return ()=> cancel();
 
     }, [site_url, site_api_key, testAgain]);
+
+    return {
+        isSuccess,
+        isTesting,
+        testAgain: ()=> setTestAgain(t=>t+1),
+    }
+}
+
+export const useSiteTestById = (site_id) => {
+
+    const [isTesting, setIsTesting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(true);
+    const [testAgain, setTestAgain] = useState(1);
+
+    useEffect(()=>{
+        if(isTesting) return;
+
+        setIsTesting(true);
+        getTestSiteById(site_id).then((success)=>{
+            console.log(success);
+            setIsTesting(false);
+            setIsSuccess(success === true);
+        });
+
+    }, [site_id, testAgain]);
 
     return {
         isSuccess,

@@ -8,7 +8,7 @@ use WP_Error;
 
 class RemoteRequest extends _Component {
 
-	private function getHeaders(){
+	public function getHeaders(){
 		return apply_filters(Plugin::FILTER_REMOTE_REQUEST_HEADER,[]);
 	}
 
@@ -19,8 +19,6 @@ class RemoteRequest extends _Component {
 	 * @return object|WP_Error
 	 */
 	public function get( $url, $site_api_key ) {
-
-
 		$response = wp_remote_get(
 			add_query_arg( Plugin::REQUEST_PARAM_API_KEY, $site_api_key, $url ),
 			[

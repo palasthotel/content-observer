@@ -69,6 +69,14 @@ class REST extends _Component {
 				'permission_callback' => function ( WP_REST_Request $request ) {
 					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
 				},
+				'args' => [
+					'site_id' => [
+						'default' => 0,
+						'validate_callback' => function ( $value, $request, $param ) {
+							return intval($value)."" === $value."";
+						},
+					]
+				],
 			)
 		);
 		register_rest_route(
@@ -264,7 +272,29 @@ class REST extends _Component {
 	}
 
 	public function ping( WP_REST_Request $request ) {
-		return [ "response" => "pong" ];
+
+		header( 'Access-Control-Allow-Headers: X-Requested-With' );
+		header( 'Access-Control-Allow-Origin: *' );
+		header( 'Access-Control-Allow-Methods: OPTIONS, GET' );
+		header( 'Access-Control-Allow-Credentials: true' );
+		header( 'Access-Control-Expose-Headers: Link', false );
+
+		$site_id = intval($request->get_param("site_id"));
+		if($site_id <= 0){
+			return [ "response" => "pong" ];
+		}
+
+		$site = $this->plugin->repo->getSite($site_id);
+		if(!($site instanceof Site)){
+			return ["response" => "Site not found."];
+		}
+
+		$response = $this->plugin->remoteRequest->get($this->getPingUrl($site->url), $site->api_key);
+		if($response instanceof \WP_Error){
+			return ["response" => $response->get_error_message()];
+		}
+
+		return $response;
 	}
 
 	public function get_sites(WP_REST_Request $request ) {
