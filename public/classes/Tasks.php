@@ -121,6 +121,7 @@ class Tasks extends _Component {
 				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url, api_key: $site->api_key -> response was no success " . json_encode( $response ) );
 				return false;
 			}
+			$this->plugin->repo->setSite($site->setRegistrationTime(time()));
 			$this->logger->line( "Connection with $site->url was updated." );
 		}
 

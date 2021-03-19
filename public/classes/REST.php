@@ -349,8 +349,12 @@ class REST extends _Component {
 		$dbSite        = $this->plugin->repo->findSiteByUrl( $site->url );
 
 		if ( $dbSite instanceof Site && $dbSite->equals( $site ) ) {
+			$success = $this->plugin->repo->setSite(
+				$dbSite
+					->setRegistrationTime(time())
+			);
 			return [
-				"success" => true,
+				"success" => $success,
 			];
 		}
 
@@ -359,6 +363,7 @@ class REST extends _Component {
 				$dbSite
 					->setApiKey( $foreignApiKey )
 					->setRelationType( $relationType )
+					->setRegistrationTime(time())
 			);
 		} else {
 			$success = $this->plugin->repo->setSite( $site );
