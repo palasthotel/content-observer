@@ -84,15 +84,15 @@ class Settings extends _Component {
 	public function page_init() {
 		register_setting(
 			Plugin::DOMAIN,
-			Plugin::OPTION_API_KEY,
+			Plugin::OPTION_API_KEY
 		);
 		register_setting(
 			Plugin::DOMAIN,
-			Plugin::OPTION_SCHEDULE_NOTIFY_OBSERVERS_IS_DISABLED,
+			Plugin::OPTION_SCHEDULE_NOTIFY_OBSERVERS_IS_DISABLED
 		);
 		register_setting(
 			Plugin::DOMAIN,
-			Plugin::OPTION_SCHEDULE_START_MODIFICATION_HOOK_IS_DISABLED,
+			Plugin::OPTION_SCHEDULE_START_MODIFICATION_HOOK_IS_DISABLED
 		);
 
 		add_settings_section(
