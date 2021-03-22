@@ -46,6 +46,7 @@ class Plugin {
 	// actions
 	// ----------------------------------------------------------------------
 	const ACTION_ON_MODIFICATIONS = "content_observer_on_modifications";
+	const ACTION_ON_SITE_MODIFICATIONS = "content_observer_on_modifications_%d";
 
 	// ----------------------------------------------------------------------
 	// schedules

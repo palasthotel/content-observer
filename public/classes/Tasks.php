@@ -8,6 +8,7 @@ use Palasthotel\WordPress\ContentObserver\Interfaces\ILogger;
 use Palasthotel\WordPress\ContentObserver\Logger\Logger;
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
 use Palasthotel\WordPress\ContentObserver\Model\Site;
+use Palasthotel\WordPress\ContentObserver\Model\SiteModificationAction;
 use WP_Error;
 
 /**
@@ -276,6 +277,27 @@ class Tasks extends _Component {
 		}
 
 		return $success;
+	}
+
+	/**
+	 * publish modifications
+	 *
+	 * @param null|int $since
+	 */
+	public function doModificationsHook($since = null){
+		if(null === $since || $since <= 0){
+			$last_hook_run = intval(get_option(Plugin::OPTION_LAST_MODIFICATIONS_HOOK_RUN, 0));
+		} else {
+			$last_hook_run = $since;
+		}
+
+		$runTime = time();
+		foreach ($this->plugin->repo->getSites() as $site){
+			$mods = $this->plugin->repo->getModifications($last_hook_run, $site->id);
+			do_action(Plugin::ACTION_ON_MODIFICATIONS, SiteModificationAction::build($site, $mods));
+			do_action( sprintf(Plugin::ACTION_ON_SITE_MODIFICATIONS, $site->id), SiteModificationAction::build($site, $mods));
+		}
+		update_option(Plugin::OPTION_LAST_MODIFICATIONS_HOOK_RUN, $runTime);
 	}
 
 	/**

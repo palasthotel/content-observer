@@ -10,6 +10,7 @@ namespace Palasthotel\WordPress\ContentObserver\Model;
  * @property int registration_time
  * @property null|int last_notification_time
  * @property string $relation_type
+ * @property string slug
  */
 class Site {
 
@@ -21,6 +22,7 @@ class Site {
 
 	private function __construct( $url ) {
 		$this->id                     = static::MY_SITE;
+		$this->slug                   = "$this->id";
 		$this->url                    = rtrim( $url, "/" ) . "/";
 		$this->api_key                = "";
 		$this->registration_time      = time();
@@ -34,6 +36,12 @@ class Site {
 
 	public function setId( $id ) {
 		$this->id = intval( $id );
+
+		return $this;
+	}
+
+	public function setSlug( $slug ) {
+		$this->slug = $slug;
 
 		return $this;
 	}
@@ -81,6 +89,7 @@ class Site {
 	public function asArray() {
 		return [
 			"id"                     => $this->id,
+			"slug"                   => $this->slug,
 			"url"                    => $this->url,
 			"relation_type"          => $this->relation_type,
 			"api_key"                => $this->api_key,

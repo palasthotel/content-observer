@@ -111,5 +111,33 @@ class CLI {
 		);
 	}
 
+	/**
+	 * start processing modifications
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--since=<timestamp>]
+	 * : only modifications later than since
+	 *
+	 * ---
+	 * default: 0
+	 * ---
+	 *
+	 * [--site_id=<site_id>]
+	 * : notify only one site with id
+	 *
+	 * ## EXAMPLES
+	 *
+	 *   wp content-observer modifications
+	 *   wp content-observer modifications --since=1616417666 --site_id=1
+	 *
+	 * @when after_wp_load
+	 */
+	public function modifications($args, $assoc_args){
+		Plugin::instance()->tasks->doModificationsHook(
+			isset($assoc_args["since"]) ? intval($assoc_args["since"]) : null
+		);
+	}
+
 
 }

@@ -37,13 +37,7 @@ class Schedule extends _Component {
 	}
 
 	public function start_modifications_hook(){
-		$last_hook_run = intval(get_option(Plugin::OPTION_LAST_MODIFICATIONS_HOOK_RUN, 0));
-		$runTime = time();
-		foreach ($this->plugin->repo->getSites() as $site){
-			$mods = $this->plugin->repo->getModifications($last_hook_run, $site->id);
-			do_action(Plugin::ACTION_ON_MODIFICATIONS, $mods, $site);
-		}
-		update_option(Plugin::OPTION_LAST_MODIFICATIONS_HOOK_RUN, $runTime);
+		$this->plugin->tasks->doModificationsHook();
 	}
 
 }

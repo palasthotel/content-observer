@@ -269,6 +269,19 @@ class REST extends _Component {
 				]
 			)
 		);
+		register_rest_route(
+			static::NAMESPACE,
+			'/modifications/run',
+			array(
+				'methods'             => "GET",
+				'callback'            => function(){
+					$this->plugin->tasks->doModificationsHook(1);
+				},
+				'permission_callback' => function ( WP_REST_Request $request ) {
+					return true;
+				},
+			)
+		);
 	}
 
 	public function ping( WP_REST_Request $request ) {

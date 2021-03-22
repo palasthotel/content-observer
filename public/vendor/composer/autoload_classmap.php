@@ -18,6 +18,7 @@ return array(
     'Palasthotel\\WordPress\\ContentObserver\\Logger\\Logger' => $baseDir . '/classes/Logger/Logger.php',
     'Palasthotel\\WordPress\\ContentObserver\\Model\\Modification' => $baseDir . '/classes/Model/Modification.php',
     'Palasthotel\\WordPress\\ContentObserver\\Model\\Site' => $baseDir . '/classes/Model/Site.php',
+    'Palasthotel\\WordPress\\ContentObserver\\Model\\SiteModificationAction' => $baseDir . '/classes/Model/SiteModificationAction.php',
     'Palasthotel\\WordPress\\ContentObserver\\OnPostChange' => $baseDir . '/classes/OnPostChange.php',
     'Palasthotel\\WordPress\\ContentObserver\\REST' => $baseDir . '/classes/REST.php',
     'Palasthotel\\WordPress\\ContentObserver\\RemoteRequest' => $baseDir . '/classes/RemoteRequest.php',
