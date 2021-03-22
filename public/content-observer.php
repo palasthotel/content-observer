@@ -57,6 +57,8 @@ class Plugin {
 	// options
 	// ----------------------------------------------------------------------
 	const OPTION_API_KEY = "_content_observer_api_key";
+	const OPTION_SCHEDULE_NOTIFY_OBSERVERS_IS_DISABLED = "_content_observer_schedule_notify_observers_is_disabled";
+	const OPTION_SCHEDULE_START_MODIFICATION_HOOK_IS_DISABLED = "_content_observer_schedule_start_modification_hook_is_disabled";
 	const OPTION_LAST_MODIFICATIONS_HOOK_RUN = "_content_observer_last_modifications_hook_run";
 
 	// ----------------------------------------------------------------------
