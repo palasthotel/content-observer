@@ -291,9 +291,12 @@ class Tasks extends _Component {
 			$last_hook_run = $since;
 		}
 
+		$this->logger->line("Run modifications since $last_hook_run");
+
 		$runTime = time();
 		foreach ($this->plugin->repo->getSites() as $site){
 			$mods = $this->plugin->repo->getModifications($last_hook_run, $site->id);
+			$this->logger->line("Found ".count($mods)." modification of site $site->slug");
 			do_action(Plugin::ACTION_ON_MODIFICATIONS, SiteModificationAction::build($site, $mods));
 			do_action( sprintf(Plugin::ACTION_ON_SITE_MODIFICATIONS, $site->id), SiteModificationAction::build($site, $mods));
 		}

@@ -109,11 +109,15 @@ class REST extends _Component {
 							foreach ($value as $site){
 								if(!isset($site["id"]) && $site["id"] !== null) return false;
 								if(intval($site["id"]) < 0) return false;
+								if(!isset($site["slug"])) return false;
 								if(!isset($site["url"]) || !filter_var( $site["url"], FILTER_VALIDATE_URL )) return false;
 								if(!isset($site["api_key"]) || empty($site["api_key"])) return false;
 								if(!isset($site["relation_type"])) return false;
 								if(!in_array($site["relation_type"], [Site::OBSERVER, Site::OBSERVABLE, Site::BOTH])) return false;
 							}
+
+							$slugs = array_unique(array_map(function($site){return $site["slug"];}, $value));
+							if(count($slugs) !== count($value)) return false;
 
 							return true;
 						},
@@ -337,6 +341,7 @@ class REST extends _Component {
 
 			$site = Site::build($site["url"])
 				->setId($site["id"])
+				->setSlug($site["slug"])
 				->setApiKey($site["api_key"])
 			    ->setRelationType($site["relation_type"])
 				->setRegistrationTime(time());

@@ -34,6 +34,7 @@ export const postSites = ({dirtySites, deletes}) => {
         data: {
             dirty_sites: dirtySites.map(s=>({
                 id: s.id ?? null,
+                slug: s.slug,
                 url: s.url,
                 api_key: s.api_key,
                 relation_type: s.relation_type,

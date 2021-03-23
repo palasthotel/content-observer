@@ -6,6 +6,7 @@ import {useSiteTest} from "../hooks/use-api";
 const SiteEditor = ({label, onSubmit, site = {}}) => {
 
     const [url, setUrl] = useState(site?.url ?? "");
+    const [slug, setSlug] = useState(site?.slug ?? "");
     const [apiKey, setApiKey] = useState(site?.api_key ?? "");
     const [relationType, setRelationType] = useState(site?.relation_type ?? "observer");
 
@@ -17,11 +18,22 @@ const SiteEditor = ({label, onSubmit, site = {}}) => {
 
     const {isTesting, isSuccess, testAgain} = useSiteTest(url, apiKey);
 
+    const slugSuggestion = url
+        .toLowerCase()
+        .replace(/[^a-z_]/g, "");
+
     return <div>
         <div style={elementStyles}>
             <label>
                 URL<br/>
                 <input type="text" value={url} onChange={e=>setUrl(e.target.value)} className="regular-text" placeholder="https://example.de/" />
+            </label>
+        </div>
+        <div style={elementStyles}>
+            <label>
+                Unique slug<br/>
+                <input type="text" value={slug} onChange={e=>setSlug(e.target.value)} className="regular-text" placeholder={slugSuggestion} /><br/>
+                <p className="description">Must begin with letter. Only lowercase letters and underscores allowed.</p>
             </label>
         </div>
         <div style={elementStyles}>
@@ -54,6 +66,7 @@ const SiteEditor = ({label, onSubmit, site = {}}) => {
                     if(!idValidSite) return;
                     onSubmit({
                         url,
+                        slug,
                         api_key: apiKey,
                         relation_type: relationType,
                         registration_time: site?.registration_time ?? Date.now()/1000,

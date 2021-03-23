@@ -25,7 +25,8 @@ const SiteRow = ({site, onDelete, hasDeleteFlag, onUndelete})=>{
             <strong style={titleStyle}>
             {site.url}
             </strong>
-            <i>{site.api_key}</i>
+            API Key: <code>{site.api_key}</code><br/>
+            Slug: <code>{site.slug}</code>
             <div className="row-actions">
                 {hasDeleteFlag ?
                     <span className="edit">
