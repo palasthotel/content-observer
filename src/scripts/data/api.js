@@ -4,12 +4,7 @@ const config = ContentObserver;
 
 const getCustomHeaders = ()=>{
     const {customRequestHeaders} = config;
-    let headers = new Headers();
-    for(const key in customRequestHeaders){
-        if(!customRequestHeaders.hasOwnProperty(key)) continue;
-        headers.set(key, customRequestHeaders[key]);
-    }
-    return headers;
+    return customRequestHeaders;
 }
 
 export const fetchSites = () => {
@@ -20,7 +15,6 @@ export const fetchSites = () => {
             method: "GET",
             headers: getCustomHeaders(),
         }).then(data => {
-        console.debug("fetchSites", data);
         return data;
     });
 }
@@ -42,16 +36,21 @@ export const postSites = ({dirtySites, deletes}) => {
             deletes
         }
     }).then(response => {
-        console.debug("postSites", response);
         return response;
     })
 }
 
 export const getTestSite = (site_url, api_key)=>{
+    const {apiNamespace,pingUrlApiKeyParam, apiKey} = config;
+    const url = `${apiNamespace}/ping?${pingUrlApiKeyParam}=${apiKey}&site_url=${encodeURIComponent(site_url)}&site_api_key=${api_key}`;
     const controller = new AbortController();
-    const { pingUrl, pingUrlApiKeyParam} = config;
-    const url = `${site_url}${pingUrl}?${pingUrlApiKeyParam}=${api_key}`;
-    const promise = fetch(url, {signal:controller.signal}).then(result=>result.json()).then(json=>{
+    const promise = apiFetch(
+        {
+            path: url,
+            signal:controller.signal,
+            headers: getCustomHeaders(),
+        }
+    ).then(json=>{
         return json.response === "pong";
     }).catch(e=>{
         console.error(e);
@@ -68,8 +67,13 @@ export const getTestSite = (site_url, api_key)=>{
 export const getTestSiteById = (site_id)=>{
     const {apiNamespace,pingUrlApiKeyParam, apiKey} = config;
     const url = `${apiNamespace}/ping?${pingUrlApiKeyParam}=${apiKey}&site_id=${site_id}`;
-    return apiFetch({path: url, signal: controller.signal}).then(data=>{
-        console.debug(data);
+    const controller = new AbortController();
+
+    return apiFetch({
+        path: url,
+        signal: controller.signal,
+        headers: getCustomHeaders(),
+    }).then(data=>{
         return data.response === "pong";
     })
 }

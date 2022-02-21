@@ -17,7 +17,7 @@ class Assets extends _Component {
 			Plugin::HANDLE_SETTINGS_JS,
 			"ContentObserver",
 			[
-				"apiKey" => $this->plugin->settings->api_key(),
+				"apiKey" => $this->plugin->settings->getApiKey(),
 				"apiNamespace" => REST::NAMESPACE,
 				"pingUrlApiKeyParam" => Plugin::REQUEST_PARAM_API_KEY,
 				"pingUrl" => $this->plugin->rest->getPingUrl(""),

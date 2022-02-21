@@ -7,6 +7,7 @@ namespace Palasthotel\WordPress\ContentObserver;
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
 use Palasthotel\WordPress\ContentObserver\Model\Site;
 use WP_REST_Request;
+use WP_REST_Server;
 
 class REST extends _Component {
 
@@ -64,18 +65,30 @@ class REST extends _Component {
 			static::NAMESPACE,
 			'/ping',
 			array(
-				'methods'             => "GET",
+				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'ping' ],
 				'permission_callback' => function ( WP_REST_Request $request ) {
 					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
 				},
 				'args' => [
 					'site_id' => [
-						'default' => 0,
+						'required' => false,
 						'validate_callback' => function ( $value, $request, $param ) {
 							return intval($value)."" === $value."";
 						},
-					]
+					],
+					'site_url' => [
+						'required' => false,
+						'validate_callback' => function ( $value, $request, $param ) {
+							return filter_var($value, FILTER_VALIDATE_URL);;
+						},
+					],
+					'site_api_key' => [
+						'required' => false,
+						'sanitize_callback' => function ( $value, $request, $param ) {
+							return sanitize_text_field($value);
+						},
+					],
 				],
 			)
 		);
@@ -83,7 +96,7 @@ class REST extends _Component {
 			static::NAMESPACE,
 			'/sites',
 			array(
-				'methods'             => "GET",
+				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'get_sites' ],
 				'permission_callback' => function ( WP_REST_Request $request ) {
 					return current_user_can( 'manage_options' );
@@ -94,7 +107,7 @@ class REST extends _Component {
 			static::NAMESPACE,
 			'/sites',
 			array(
-				'methods'             => "POST",
+				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => [ $this, 'post_sites' ],
 				'permission_callback' => function ( WP_REST_Request $request ) {
 					return current_user_can( 'manage_options' );
@@ -145,7 +158,7 @@ class REST extends _Component {
 			static::NAMESPACE,
 			'/connect',
 			array(
-				'methods'             => "POST",
+				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => [ $this, 'connect' ],
 				'permission_callback' => function ( WP_REST_Request $request ) {
 					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
@@ -177,7 +190,7 @@ class REST extends _Component {
 			static::NAMESPACE,
 			'/modifications',
 			array(
-				'methods'             => "POST",
+				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'post_modifications' ),
 				'permission_callback' => function ( WP_REST_Request $request ) {
 					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
@@ -224,7 +237,7 @@ class REST extends _Component {
 			static::NAMESPACE,
 			'/modifications',
 			array(
-				'methods'             => "GET",
+				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_modifications' ),
 				'permission_callback' => function ( WP_REST_Request $request ) {
 					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
@@ -277,7 +290,7 @@ class REST extends _Component {
 			static::NAMESPACE,
 			'/modifications/run',
 			array(
-				'methods'             => "GET",
+				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => function(){
 					$this->plugin->tasks->doModificationsHook(1);
 				},
@@ -290,12 +303,24 @@ class REST extends _Component {
 
 	public function ping( WP_REST_Request $request ) {
 
-		header( 'Access-Control-Allow-Headers: X-Requested-With' );
-		header( 'Access-Control-Allow-Origin: *' );
-		header( 'Access-Control-Allow-Methods: OPTIONS, GET' );
-		header( 'Access-Control-Allow-Credentials: true' );
-		header( 'Access-Control-Expose-Headers: Link', false );
+		// ------------------------------------------------------
+		// ping with site url
+		// ------------------------------------------------------
+		$site_url = $request->get_param("site_url");
 
+		if(!empty($site_url)){
+			$apiKey = $request->get_param("site_api_key");
+			$response = $this->plugin->remoteRequest->get($this->getPingUrl($site_url), $apiKey);
+			if($response instanceof \WP_Error){
+				return ["response" => $response->get_error_message()];
+			}
+
+			return $response;
+		}
+
+		// ------------------------------------------------------
+		// ping with site id
+		// ------------------------------------------------------
 		$site_id = intval($request->get_param("site_id"));
 		if($site_id <= 0){
 			return [ "response" => "pong" ];
@@ -323,12 +348,11 @@ class REST extends _Component {
 	public function post_sites( WP_REST_Request $request ) {
 
 		// modify sites
-
 		$dirtySites = $request->get_param("dirty_sites");
 		$deletes = $request->get_param("deletes");
 
 		foreach ($dirtySites as $site){
-			if(!isset($site["id"]) || empty($site["id"]) || intval($site["id"]) <= 0){
+			if( empty($site["id"]) || intval($site["id"]) <= 0){
 				$siteDb = $this->plugin->repo->findSiteByUrl($site["url"]);
 				if($siteDb instanceof Site){
 					return new \WP_REST_Response([

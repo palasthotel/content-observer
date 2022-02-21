@@ -1,6 +1,7 @@
 <?php
 
 
+use Palasthotel\WordPress\ContentObserver\Model\Modification;
 use Palasthotel\WordPress\ContentObserver\Model\Site;
 use Palasthotel\WordPress\ContentObserver\Plugin;
 
@@ -24,4 +25,13 @@ function content_observer_get_site_by_id($site_id){
  */
 function content_observer_find_site_by_url($site_url){
 	return content_observer_plugin()->repo->findSiteByUrl($site_url);
+}
+
+/**
+ * @param Modification $mod
+ *
+ * @return bool|int
+ */
+function content_observer_add_modification( Modification $mod) {
+	return content_observer_plugin()->repo->setModification($mod);
 }

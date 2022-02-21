@@ -29,7 +29,6 @@ export const useSites = () => {
                 dirtySites,
                 deletes,
             }).then(sites => {
-                console.log("set sites", sites)
                 setIsSaving(false);
                 setState(sites);
             }).catch(error => {
@@ -63,7 +62,6 @@ export const useSiteTest = (site_url, site_api_key) => {
         const {promise, cancel} = getTestSite(site_url, site_api_key);
 
         promise.then((success)=>{
-            console.log(success);
             setIsTesting(false);
             setIsSuccess(success === true);
         });
@@ -90,7 +88,6 @@ export const useSiteTestById = (site_id) => {
 
         setIsTesting(true);
         getTestSiteById(site_id).then((success)=>{
-            console.log(success);
             setIsTesting(false);
             setIsSuccess(success === true);
         });
