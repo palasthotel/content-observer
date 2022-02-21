@@ -2,18 +2,12 @@ import apiFetch from "@wordpress/api-fetch";
 
 const config = ContentObserver;
 
-const getCustomHeaders = ()=>{
-    const {customRequestHeaders} = config;
-    return customRequestHeaders;
-}
-
 export const fetchSites = () => {
     const {apiNamespace} = config;
     return apiFetch(
         {
             path: `/${apiNamespace}/sites`,
             method: "GET",
-            headers: getCustomHeaders(),
         }).then(data => {
         return data;
     });
@@ -24,7 +18,6 @@ export const postSites = ({dirtySites, deletes}) => {
     return apiFetch({
         path: `/${apiNamespace}/sites`,
         method: "POST",
-        headers: getCustomHeaders(),
         data: {
             dirty_sites: dirtySites.map(s=>({
                 id: s.id ?? null,
@@ -48,7 +41,6 @@ export const getTestSite = (site_url, api_key)=>{
         {
             path: url,
             signal:controller.signal,
-            headers: getCustomHeaders(),
         }
     ).then(json=>{
         return json.response === "pong";
@@ -72,7 +64,6 @@ export const getTestSiteById = (site_id)=>{
     return apiFetch({
         path: url,
         signal: controller.signal,
-        headers: getCustomHeaders(),
     }).then(data=>{
         return data.response === "pong";
     })

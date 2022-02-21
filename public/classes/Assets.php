@@ -21,7 +21,6 @@ class Assets extends _Component {
 				"apiNamespace" => REST::NAMESPACE,
 				"pingUrlApiKeyParam" => Plugin::REQUEST_PARAM_API_KEY,
 				"pingUrl" => $this->plugin->rest->getPingUrl(""),
-				"customRequestHeaders" => $this->plugin->remoteRequest->getHeaders(),
 			]
 		);
 	}
