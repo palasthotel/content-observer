@@ -129,7 +129,7 @@ class CLI {
 	 * ## EXAMPLES
 	 *
 	 *   wp content-observer modifications
-	 *   wp content-observer modifications --since=1616417666 --site_id=1
+	 *   wp content-observer modifications --since=1616417666
 	 *
 	 * @when after_wp_load
 	 */
