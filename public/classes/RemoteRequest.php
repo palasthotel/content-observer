@@ -19,11 +19,13 @@ class RemoteRequest extends _Component {
 	 * @return object|WP_Error
 	 */
 	public function get( $url, $site_api_key ) {
+		$headers = $this->getHeaders();
+		$args = array(
+			'headers' => $headers,
+		);
 		$response = wp_remote_get(
 			add_query_arg( Plugin::REQUEST_PARAM_API_KEY, $site_api_key, $url ),
-			[
-				"headers" => $this->getHeaders(),
-			]
+			$args
 		);
 		if($response instanceof WP_Error) return $response;
 		return json_decode($response['body']);
@@ -37,11 +39,12 @@ class RemoteRequest extends _Component {
 	 * @return object|WP_Error
 	 */
 	public function post( $url, $site_api_key, $data ) {
+		$headers = $this->getHeaders();
 		$response = wp_remote_post(
 			add_query_arg( Plugin::REQUEST_PARAM_API_KEY, $site_api_key, $url ),
 			[
 				"body" => $data,
-				"headers" => $this->getHeaders(),
+				"headers" => $headers,
 			]
 		);
 		if($response instanceof WP_Error) return $response;

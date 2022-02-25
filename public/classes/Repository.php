@@ -17,11 +17,6 @@ class Repository extends _Component {
 	private $modificationsDB;
 
 	/**
-	 * @var null|Modification[][]
-	 */
-	private $modificationsCache;
-
-	/**
 	 * @var Sites
 	 */
 	private $sitesDB;
@@ -35,7 +30,6 @@ class Repository extends _Component {
 		parent::onCreate();
 
 		$this->modificationsDB = new Modifications();
-		$this->modificationsCache = [];
 		$this->sitesDB         = new Sites();
 		$this->sitesCache = [];
 	}
@@ -130,11 +124,8 @@ class Repository extends _Component {
 	 * @return Modification[]
 	 */
 	public function getModifications($since = 0, $site_id = Site::MY_SITE, $limit = 100, $pageIndex = 0){
-		if(!isset($this->modificationsCache[$since])){
 
-			$this->modificationsCache[$since] = $this->modificationsDB->getModifications($since, $site_id, $limit, $pageIndex);
-		}
-		return $this->modificationsCache[$since];
+		return $this->modificationsDB->getModifications($since, $site_id, $limit, $pageIndex);
 	}
 
 	/**
