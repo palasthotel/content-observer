@@ -65,12 +65,16 @@ class Plugin {
 	// ----------------------------------------------------------------------
 	// asset handles
 	// ----------------------------------------------------------------------
+	const HANDLE_MODIFICATIONS_JS = "content-observer-modifications-js";
 	const HANDLE_SETTINGS_JS = "content-observer-settings-js";
 
 	// ----------------------------------------------------------------------
 	// other constants
 	// ----------------------------------------------------------------------
+	const MODIFICATIONS_PAGE = "content-observer";
+	const MANAGE_PAGE = "content-observer-manage";
 	const SETTINGS_PAGE = "content-observer-settings";
+
 	const REQUEST_PARAM_API_KEY = "content_observer_api_key";
 
 	/**

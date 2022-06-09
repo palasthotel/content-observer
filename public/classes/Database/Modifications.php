@@ -4,6 +4,7 @@
 namespace Palasthotel\WordPress\ContentObserver\Database;
 
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
+use Palasthotel\WordPress\ContentObserver\Model\ModQueryArgs;
 use wpdb;
 
 /**
@@ -44,17 +45,16 @@ class Modifications extends _DB {
 	}
 
 	/**
-	 * @param int $since
-	 * @param int $site_id
-	 *
-	 * @param int|null $limit
-	 * @param int|null $pageIndex
-	 *
 	 * @return Modification[]
 	 */
-	public function getModifications( $since, $site_id, $limit, $pageIndex ) {
+	public function getModifications( ModQueryArgs $args): array {
 
+		$where = $this->buildWhere($args);
+
+		// pagination
 		$limitQuery = "";
+		$limit = $args->per_page;
+		$pageIndex = $args->page-1;
 		$hasValidLimit = is_int($limit) && $limit > 0;
 		$hasValidPageIndex = is_int($pageIndex) && $pageIndex >= 0;
 		if(
@@ -68,11 +68,7 @@ class Modifications extends _DB {
 		}
 
 		$results = $this->wpdb->get_results(
-			$this->wpdb->prepare(
-				"SELECT site_id, content_id, content_type, mod_time, mod_type FROM $this->table WHERE site_id = %d AND mod_time >= %d $limitQuery",
-				$site_id,
-				$since
-			)
+			"SELECT site_id, content_id, content_type, mod_time, mod_type FROM $this->table $where $limitQuery",
 		);
 
 		return array_map( function ( $row ) {
@@ -83,18 +79,50 @@ class Modifications extends _DB {
 		}, $results );
 	}
 
-	/**
-	 * @param int $since
-	 * @param int $site_id
-	 *
-	 * @return int
-	 */
-	public function countModifications( $since, $site_id){
-		$count = $this->wpdb->get_var(
-			$this->wpdb->prepare("SELECT count(site_id) FROM $this->table WHERE site_id = %d AND mod_time >= %d", $site_id, $since)
-		);
+	public function countModifications( ModQueryArgs $args ): int {
+		$where = $this->buildWhere($args);
+		$count = $this->wpdb->get_var( "SELECT count(site_id) FROM $this->table $where" );
 		return intval($count);
 	}
+
+	private function buildWhere(ModQueryArgs $args): string {
+		$conditions = [];
+		if(null !== $args->site_id) {
+			$conditions[] = $this->wpdb->prepare(
+				"site_id = %d",
+				$args->site_id
+			);
+		}
+		if(null !== $args->since){
+			$conditions[] = $this->wpdb->prepare(
+				"mod_time >= %d",
+				$args->since
+			);
+		}
+		if(null !== $args->content_id){
+			$conditions[] = $this->wpdb->prepare(
+				"content_id = %d",
+				$args->content_id
+			);
+		}
+		if(!empty($args->content_types)){
+			$types = implode(", ",array_map(function($type){
+				return $this->wpdb->prepare("%s",$type);
+			}, $args->content_types));
+
+			$conditions[] = "content_type IN ($types)";
+		}
+		if(!empty($args->modification_types)){
+			$types = implode(", ",array_map(function($type){
+				return $this->wpdb->prepare("%s", $type);
+			}, $args->modification_types));
+			$conditions[] = "mod_type IN ($types)";
+		}
+
+		return count($conditions) > 0 ? "WHERE ".implode(" AND ", $conditions) : "";
+	}
+
+
 
 	/**
 	 * create tables if they do not exist

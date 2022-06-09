@@ -4,6 +4,9 @@
 namespace Palasthotel\WordPress\ContentObserver;
 
 
+use Palasthotel\WordPress\ContentObserver\Model\ModQueryArgs;
+use Palasthotel\WordPress\ContentObserver\Model\Site;
+
 class Settings extends _Component {
 
 	public function onCreate() {
@@ -41,9 +44,20 @@ class Settings extends _Component {
 		add_submenu_page(
 			Plugin::DOMAIN,
 			'Content Observer',
+			'Modifications',
+			'manage_options',
+			Plugin::MODIFICATIONS_PAGE,
+			function () {
+               $this->plugin->assets->enqueueModifications();
+				echo "<div class='wrap'><div id='content-observer-modifications'></div></div>";
+			}
+		);
+		add_submenu_page(
+			Plugin::DOMAIN,
+			'Content Observer',
 			'Manage',
 			'manage_options',
-			Plugin::DOMAIN,
+			Plugin::MANAGE_PAGE,
 			function () {
 				$this->plugin->assets->enqueueSettings();
 				echo "<div class='wrap'><div id='content-sync__sites'></div></div>";

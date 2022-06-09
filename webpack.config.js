@@ -4,10 +4,11 @@ const path = require('path')
 module.exports = {
     ...defaultConfig,
     entry: {
+        'modifications': path.resolve(__dirname, './src/modifications/modifications.tsx'),
         'settings': path.resolve(__dirname, './src/scripts/settings.jsx'),
     },
     output: {
-        path: path.resolve(__dirname, './public/js/settings/.'),
+        path: path.resolve(__dirname, './public/dist/.'),
     },
 }
 

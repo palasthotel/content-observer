@@ -1,10 +1,7 @@
 {
   "autoload": {
-    "classmap": [
-      "classes"
-    ],
     "psr-4": {
-      "Palasthotel\\WordPress\\Sync\\": "classes"
+      "Palasthotel\\WordPress\\ContentObserver\\": "classes"
     }
   }
 }

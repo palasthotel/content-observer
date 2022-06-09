@@ -7,6 +7,7 @@ namespace Palasthotel\WordPress\ContentObserver;
 use Palasthotel\WordPress\ContentObserver\Interfaces\ILogger;
 use Palasthotel\WordPress\ContentObserver\Logger\Logger;
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
+use Palasthotel\WordPress\ContentObserver\Model\ModQueryArgs;
 use Palasthotel\WordPress\ContentObserver\Model\Site;
 use Palasthotel\WordPress\ContentObserver\Model\SiteModificationAction;
 use WP_Error;
@@ -160,7 +161,11 @@ class Tasks extends _Component {
 
 			$this->logger->line( "Notify about modifications site $observer->id -> $observer->url" );
 
-			$mods = $repo->getModifications( $observer->last_notification_time );
+			$args = ModQueryArgs::build()
+			                    ->since($observer->last_notification_time)
+								->siteId(Site::MY_SITE);
+
+			$mods = $repo->getModifications( $args );
 
 			$modifications = array_map( function ( $mod ) {
 				$this->logger->line( "Modification: " . json_encode( $mod ) );
@@ -295,12 +300,23 @@ class Tasks extends _Component {
 
 		$runTime = time();
 		foreach ($this->plugin->repo->getSites() as $site){
-			$mods = $this->plugin->repo->getModifications($last_hook_run, $site->id);
+			$args = ModQueryArgs::build()->siteId($since->id)->since($last_hook_run);
+			$mods = $this->plugin->repo->getModifications($args);
 			$this->logger->line("Found ".count($mods)." modification of site $site->slug");
-			do_action(Plugin::ACTION_ON_MODIFICATIONS, SiteModificationAction::build($site, $mods));
-			do_action( sprintf(Plugin::ACTION_ON_SITE_MODIFICATIONS, $site->id), SiteModificationAction::build($site, $mods));
+			$this->runModifications($site, $mods);
 		}
 		update_option(Plugin::OPTION_LAST_MODIFICATIONS_HOOK_RUN, $runTime);
+	}
+
+	/**
+	 * @param Site $site
+	 * @param Modification[] $mods
+	 *
+	 * @return void
+	 */
+	public function runModifications(Site $site, array $mods){
+		do_action(Plugin::ACTION_ON_MODIFICATIONS, SiteModificationAction::build($site, $mods));
+		do_action( sprintf(Plugin::ACTION_ON_SITE_MODIFICATIONS, $site->id), SiteModificationAction::build($site, $mods));
 	}
 
 	/**

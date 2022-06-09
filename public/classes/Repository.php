@@ -7,7 +7,9 @@ namespace Palasthotel\WordPress\ContentObserver;
 use Palasthotel\WordPress\ContentObserver\Database\Modifications;
 use Palasthotel\WordPress\ContentObserver\Database\Sites;
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
+use Palasthotel\WordPress\ContentObserver\Model\ModQueryArgs;
 use Palasthotel\WordPress\ContentObserver\Model\Site;
+use PhpParser\Node\Expr\AssignOp\Mod;
 
 class Repository extends _Component {
 
@@ -113,27 +115,16 @@ class Repository extends _Component {
 	}
 
 	/**
-	 * @param int $since null means own mods
-	 *
-	 * @param int $site_id
-	 *
-	 * @param int $limit
-	 *
-	 * @param int $pageIndex
 	 *
 	 * @return Modification[]
 	 */
-	public function getModifications($since = 0, $site_id = Site::MY_SITE, $limit = 100, $pageIndex = 0){
+	public function getModifications(ModQueryArgs $args): array {
 
-		return $this->modificationsDB->getModifications($since, $site_id, $limit, $pageIndex);
+		return $this->modificationsDB->getModifications($args);
 	}
 
-	/**
-	 * @param int $since
-	 * @param int $site_id
-	 */
-	public function countModifications( $since, $site_id = Site::MY_SITE ) {
-		return $this->modificationsDB->countModifications($since, $site_id);
+	public function countModifications( ModQueryArgs $args ): int {
+		return $this->modificationsDB->countModifications($args);
 	}
 
 	/**
