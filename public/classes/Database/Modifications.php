@@ -68,7 +68,7 @@ class Modifications extends _DB {
 		}
 
 		$results = $this->wpdb->get_results(
-			"SELECT site_id, content_id, content_type, mod_time, mod_type FROM $this->table $where $limitQuery",
+			"SELECT site_id, content_id, content_type, mod_time, mod_type FROM $this->table $where ORDER BY mod_time ASC $limitQuery",
 		);
 
 		return array_map( function ( $row ) {
