@@ -300,7 +300,7 @@ class Tasks extends _Component {
 
 		$runTime = time();
 		foreach ($this->plugin->repo->getSites() as $site){
-			$args = ModQueryArgs::build()->siteId($since->id)->since($last_hook_run);
+			$args = ModQueryArgs::build()->siteId($site->id)->since($last_hook_run);
 			$mods = $this->plugin->repo->getModifications($args);
 			$this->logger->line("Found ".count($mods)." modification of site $site->slug");
 			$this->runModifications($site, $mods);
