@@ -5,7 +5,7 @@ module.exports = {
     ...defaultConfig,
     entry: {
         'modifications': path.resolve(__dirname, './src/modifications/modifications.tsx'),
-        'settings': path.resolve(__dirname, './src/scripts/settings.jsx'),
+        'settings': path.resolve(__dirname, './src/settings/settings.jsx'),
     },
     output: {
         path: path.resolve(__dirname, './public/dist/.'),

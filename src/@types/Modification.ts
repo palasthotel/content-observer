@@ -24,3 +24,13 @@ export type ModificationsResponse = {
     page: number
     pages: number
 }
+
+export type SiteResponse = {
+    id: number
+    slug: string
+    url: string
+    relation_type: "observer" | "observable" | "both"
+    api_key: string
+    registration_time: number
+    last_notification_time: number
+}
