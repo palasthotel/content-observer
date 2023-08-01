@@ -373,7 +373,7 @@ class REST extends Component {
 			}
 
 			$site = Site::build( $site["url"] )
-			            ->setId( $site["id"] )
+			            ->setId( $site["id"] ?? 0 )
 			            ->setSlug( $site["slug"] )
 			            ->setApiKey( $site["api_key"] )
 			            ->setRelationType( $site["relation_type"] )
