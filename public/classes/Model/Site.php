@@ -2,16 +2,6 @@
 
 namespace Palasthotel\WordPress\ContentObserver\Model;
 
-
-/**
- * @property null|int id
- * @property string url
- * @property string api_key
- * @property int registration_time
- * @property null|int last_notification_time
- * @property string $relation_type
- * @property string slug
- */
 class Site {
 
 	const MY_SITE = 0;
@@ -19,6 +9,13 @@ class Site {
 	const OBSERVER = "observer";
 	const OBSERVABLE = "observable";
 	const BOTH = "both";
+	public int $id;
+	public string $slug;
+	public string $url;
+	public string $api_key;
+	public int $registration_time;
+	public int $last_notification_time;
+	public string $relation_type;
 
 	private function __construct( $url ) {
 		$this->id                     = static::MY_SITE;
@@ -30,63 +27,63 @@ class Site {
 		$this->relation_type          = static::OBSERVABLE;
 	}
 
-	public static function build( $url ) {
+	public static function build( $url ): static {
 		return new Site( $url );
 	}
 
-	public function setId( $id ) {
+	public function setId( int|string $id ): self {
 		$this->id = intval( $id );
 
 		return $this;
 	}
 
-	public function setSlug( $slug ) {
+	public function setSlug( string $slug ): self {
 		$this->slug = $slug;
 
 		return $this;
 	}
 
-	public function setApiKey( $api_key ) {
+	public function setApiKey( string $api_key ): self {
 		$this->api_key = $api_key;
 
 		return $this;
 	}
 
-	public function setRegistrationTime( $time ) {
+	public function setRegistrationTime( int|string $time ): self {
 		$this->registration_time = intval( $time );
 
 		return $this;
 	}
 
-	public function setLastNotificationTime( $time ) {
+	public function setLastNotificationTime( int|string $time ): self {
 		$this->last_notification_time = intval( $time );
 
 		return $this;
 	}
 
-	public function setRelationType( $type ) {
+	public function setRelationType( string $type ): self {
 		$this->relation_type = $type;
 
 		return $this;
 	}
 
-	public function observable() {
+	public function observable(): self {
 		return $this->setRelationType( static::OBSERVABLE );
 	}
 
-	public function observer() {
+	public function observer(): self {
 		return $this->setRelationType( static::OBSERVER );
 	}
 
-	public function isObservable() {
+	public function isObservable(): bool {
 		return static::OBSERVABLE === $this->relation_type || static::BOTH == $this->relation_type;
 	}
 
-	public function isObserver() {
+	public function isObserver(): bool {
 		return static::OBSERVER === $this->relation_type || static::BOTH == $this->relation_type;
 	}
 
-	public function asArray() {
+	public function asArray(): array {
 		return [
 			"id"                     => $this->id,
 			"slug"                   => $this->slug,
@@ -98,12 +95,7 @@ class Site {
 		];
 	}
 
-	/**
-	 * @param Site $site
-	 *
-	 * @return bool
-	 */
-	public function equals( $site ) {
+	public function equals( Site $site ): bool {
 		return $site->url == $this->url &&
 		       $site->api_key == $this->api_key &&
 		       $site->relation_type === $this->relation_type;

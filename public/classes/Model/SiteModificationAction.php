@@ -8,30 +8,21 @@ class SiteModificationAction {
 	/**
 	 * @var Modification[] $modifications
 	 */
-	var $modifications;
-	/**
-	 * @var Site
-	 */
-	var $site;
+	public array $modifications;
+	public Site $site;
 
 	/**
-	 * SiteModificationAction constructor.
-	 *
-	 * @param $site
-	 * @param $mods
+	 * @param Modification[] $mods
 	 */
-	private function __construct($site, $mods) {
+	private function __construct( Site $site, array $mods) {
 		$this->modifications = $mods;
 		$this->site = $site;
 	}
 
 	/**
-	 * @param Site $site
 	 * @param Modification[] $mods
-	 *
-	 * @return SiteModificationAction
 	 */
-	public static function build($site, $mods = []){
-		return new self($site, $mods);
+	public static function build(Site $site, array $mods = []): self {
+		return new static($site, $mods);
 	}
 }

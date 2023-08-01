@@ -4,9 +4,10 @@
 namespace Palasthotel\WordPress\ContentObserver;
 
 
+use Palasthotel\WordPress\ContentObserver\Components\Component;
 use WP_Error;
 
-class RemoteRequest extends _Component {
+class RemoteRequest extends Component {
 
 	public function getHeaders(){
 		return apply_filters(Plugin::FILTER_REMOTE_REQUEST_HEADER,[]);

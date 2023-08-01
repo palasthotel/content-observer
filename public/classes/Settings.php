@@ -4,10 +4,9 @@
 namespace Palasthotel\WordPress\ContentObserver;
 
 
-use Palasthotel\WordPress\ContentObserver\Model\ModQueryArgs;
-use Palasthotel\WordPress\ContentObserver\Model\Site;
+use Palasthotel\WordPress\ContentObserver\Components\Component;
 
-class Settings extends _Component {
+class Settings extends Component {
 
 	public function onCreate() {
 		parent::onCreate();

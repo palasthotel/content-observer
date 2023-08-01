@@ -2,29 +2,22 @@
 
 namespace Palasthotel\WordPress\ContentObserver\Model;
 
-/**
- * @property int $per_page
- * @property int $page
- *
- * @property null|int $site_id
- * @property null|int $since
- * @property null|int $content_id
- * @property string[] $content_types
- * @property string[] $modification_types
- */
 class ModQueryArgs {
 
-	private function __construct() {
-		$this->per_page = 100;
-		$this->page     = 1;
+	public int $per_page = 100;
+	public int $page = 1;
 
-		$this->site_id            = null;
-		$this->since              = null;
-		$this->content_id         = null;
-		$this->content_types      = [];
-		$this->modification_types = [];
-	}
-
+	public ?int $site_id = null;
+	public ?int $since = null;
+	public ?string $content_id = null;
+	/**
+	 * @var string[]
+	 */
+	public array $content_types = [];
+	/**
+	 * @var string[]
+	 */
+	public array $modification_types = [];
 
 	public static function build(): ModQueryArgs {
 		return new ModQueryArgs();
@@ -70,7 +63,7 @@ class ModQueryArgs {
 	}
 
 	public function modificationType( string $value ): self {
-		$this->modification_types = $value;
+		$this->modification_types = [$value];
 
 		return $this;
 	}

@@ -4,7 +4,9 @@
 namespace Palasthotel\WordPress\ContentObserver;
 
 
-class Assets extends _Component {
+use Palasthotel\WordPress\ContentObserver\Components\Component;
+
+class Assets extends Component {
 
 
 	public function enqueueModifications(){

@@ -4,14 +4,14 @@
 namespace Palasthotel\WordPress\ContentObserver;
 
 
+use Palasthotel\WordPress\ContentObserver\Components\Component;
 use Palasthotel\WordPress\ContentObserver\Database\Modifications;
 use Palasthotel\WordPress\ContentObserver\Database\Sites;
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
 use Palasthotel\WordPress\ContentObserver\Model\ModQueryArgs;
 use Palasthotel\WordPress\ContentObserver\Model\Site;
-use PhpParser\Node\Expr\AssignOp\Mod;
 
-class Repository extends _Component {
+class Repository extends Component {
 
 	/**
 	 * @var Modifications
@@ -42,7 +42,7 @@ class Repository extends _Component {
 	public function init(){
 		// order matteres because modifications have foreign key for sites
 		$this->sitesDB->createTable();
-		$this->modificationsDB->createTable();
+		$this->modificationsDB->createTables();
 
 	}
 

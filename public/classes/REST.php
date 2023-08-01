@@ -1,19 +1,17 @@
 <?php
 
-
 namespace Palasthotel\WordPress\ContentObserver;
 
-
+use Palasthotel\WordPress\ContentObserver\Components\Component;
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
 use Palasthotel\WordPress\ContentObserver\Model\ModQueryArgs;
 use Palasthotel\WordPress\ContentObserver\Model\Site;
+use WP_Error;
 use WP_REST_Request;
 use WP_REST_Server;
 
-class REST extends _Component {
-
+class REST extends Component {
 	const NAMESPACE = "content-sync/v1";
-
 	public function onCreate() {
 		parent::onCreate();
 		// TODO: -- unregister-observer
@@ -21,39 +19,19 @@ class REST extends _Component {
 		add_action( 'rest_api_init', [ $this, "init_rest_api" ] );
 	}
 
-	/**
-	 * @param string $site_url
-	 *
-	 * @return string
-	 */
-	public function getRestBaseUrl( $site_url ) {
+	public function getRestBaseUrl( string $site_url ): string {
 		return trim( $site_url ) . "/" . rest_get_url_prefix() . "/" . self::NAMESPACE;
 	}
 
-	/**
-	 * @param string $site_url
-	 *
-	 * @return string
-	 */
-	public function getPingUrl( $site_url ) {
+	public function getPingUrl( string $site_url ): string {
 		return $this->getRestBaseUrl( $site_url ) . "/ping";
 	}
 
-	/**
-	 * @param string $site_url
-	 *
-	 * @return string
-	 */
-	public function getConnectUrl( $site_url ) {
+	public function getConnectUrl( string $site_url ): string {
 		return $this->getRestBaseUrl( $site_url ) . "/connect";
 	}
 
-	/**
-	 * @param string $site_url
-	 *
-	 * @return string
-	 */
-	public function getModificationsUrl( $site_url ) {
+	public function getModificationsUrl( string $site_url ): string {
 		return $this->getRestBaseUrl( $site_url ) . "/modifications";
 	}
 
@@ -77,7 +55,7 @@ class REST extends _Component {
 					'site_url'     => [
 						'required'          => false,
 						'validate_callback' => function ( $value, $request, $param ) {
-							return filter_var( $value, FILTER_VALIDATE_URL );;
+							return filter_var( $value, FILTER_VALIDATE_URL );
 						},
 					],
 					'site_api_key' => [
@@ -330,19 +308,6 @@ class REST extends _Component {
 				]
 			)
 		);
-		register_rest_route(
-			static::NAMESPACE,
-			'/modifications/run',
-			array(
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => function () {
-					$this->plugin->tasks->doModificationsHook( 1 );
-				},
-				'permission_callback' => function ( WP_REST_Request $request ) {
-					return true;
-				},
-			)
-		);
 	}
 
 	public function ping( WP_REST_Request $request ) {
@@ -355,7 +320,7 @@ class REST extends _Component {
 		if ( ! empty( $site_url ) ) {
 			$apiKey   = $request->get_param( "site_api_key" );
 			$response = $this->plugin->remoteRequest->get( $this->getPingUrl( $site_url ), $apiKey );
-			if ( $response instanceof \WP_Error ) {
+			if ( $response instanceof WP_Error ) {
 				return [ "response" => $response->get_error_message() ];
 			}
 
@@ -376,7 +341,7 @@ class REST extends _Component {
 		}
 
 		$response = $this->plugin->remoteRequest->get( $this->getPingUrl( $site->url ), $site->api_key );
-		if ( $response instanceof \WP_Error ) {
+		if ( $response instanceof WP_Error ) {
 			return [ "response" => $response->get_error_message() ];
 		}
 

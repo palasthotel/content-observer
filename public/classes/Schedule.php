@@ -4,7 +4,9 @@
 namespace Palasthotel\WordPress\ContentObserver;
 
 
-class Schedule extends _Component {
+use Palasthotel\WordPress\ContentObserver\Components\Component;
+
+class Schedule extends Component {
 
 	public function onCreate() {
 		parent::onCreate();

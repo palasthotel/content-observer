@@ -3,19 +3,15 @@
 
 namespace Palasthotel\WordPress\ContentObserver\Database;
 
+use Palasthotel\WordPress\ContentObserver\Components\Database;
 use Palasthotel\WordPress\ContentObserver\Model\Site;
-use wpdb;
 
-/**
- * @property  wpdb $wpdb
- * @property string table
- */
-class Sites extends _DB {
+class Sites extends Database {
 
-	const TABLE_NAME_WITHOUT_PREFIX = "content_observer_sites";
+	private string $table;
 
-	public function __construct() {
-		parent::__construct( static::TABLE_NAME_WITHOUT_PREFIX );
+	public function init() {
+		$this->table = $this->wpdb->prefix."content_observer_sites";
 	}
 
 	/**

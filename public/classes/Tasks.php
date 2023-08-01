@@ -4,6 +4,7 @@
 namespace Palasthotel\WordPress\ContentObserver;
 
 
+use Palasthotel\WordPress\ContentObserver\Components\Component;
 use Palasthotel\WordPress\ContentObserver\Interfaces\ILogger;
 use Palasthotel\WordPress\ContentObserver\Logger\Logger;
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
@@ -12,20 +13,16 @@ use Palasthotel\WordPress\ContentObserver\Model\Site;
 use Palasthotel\WordPress\ContentObserver\Model\SiteModificationAction;
 use WP_Error;
 
-/**
- * @property ILogger logger
- */
-class Tasks extends _Component {
+class Tasks extends Component {
+
+	private ILogger $logger;
 
 	public function onCreate() {
 		parent::onCreate();
 		$this->logger = new Logger( WP_DEBUG );
 	}
 
-	/**
-	 * @param ILogger $logger
-	 */
-	public function setLogger( $logger ) {
+	public function setLogger( ILogger $logger ) {
 		$this->logger = $logger;
 	}
 
@@ -211,19 +208,20 @@ class Tasks extends _Component {
 	 * @param boolean $allModifications
 	 * @param int $numberOfModsPerRequest
 	 *
-	 * @return boolean[]
+	 * @return int
 	 */
 	public function fetch(
 		$site_id = null,
 		$allModifications = false,
 		$numberOfModsPerRequest = 100
-	) {
+	): int {
 		$repo        = $this->plugin->repo;
 		$rest        = $this->plugin->rest;
 		$request     = $this->plugin->remoteRequest;
 		$observables = $repo->getObservables();
 		$runTime     = time();
 		$success     = [];
+		$numberOfModifications = 0;
 		$period      = $allModifications ? "all" : "new";
 		foreach ( $observables as $observable ) {
 			if ( null !== $site_id && $site_id !== $observable->id ) {
@@ -269,6 +267,7 @@ class Tasks extends _Component {
 							->setSiteId($observable->id)
 							->setModified($runTime)
 					);
+					$numberOfModifications++;
 				}
 
 				$page++;
@@ -281,15 +280,14 @@ class Tasks extends _Component {
 			}
 		}
 
-		return $success;
+		return $numberOfModifications;
 	}
 
 	/**
 	 * publish modifications
 	 *
-	 * @param null|int $since
 	 */
-	public function doModificationsHook($since = null){
+	public function doModificationsHook( ?int $since = null): int{
 		if(null === $since || $since <= 0){
 			$last_hook_run = intval(get_option(Plugin::OPTION_LAST_MODIFICATIONS_HOOK_RUN, 0));
 		} else {
@@ -299,6 +297,7 @@ class Tasks extends _Component {
 		$this->logger->line("Run modifications since $last_hook_run");
 
 		$runTime = time();
+		$numberOfAppliedModifications = 0;
 		foreach ($this->plugin->repo->getSites() as $site){
 			$args = ModQueryArgs::build()->siteId($site->id)->since($last_hook_run);
 			do {
@@ -306,9 +305,11 @@ class Tasks extends _Component {
 				$this->logger->line("Found ".count($mods)." modification of site $site->slug, page $args->page");
 				$this->runModifications($site, $mods);
 				$args->page($args->page+1);
+				$numberOfAppliedModifications++;
 			} while(count($mods) > 0);
 		}
 		update_option(Plugin::OPTION_LAST_MODIFICATIONS_HOOK_RUN, $runTime);
+		return $numberOfAppliedModifications;
 	}
 
 	/**

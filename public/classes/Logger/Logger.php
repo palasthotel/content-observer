@@ -6,17 +6,11 @@ namespace Palasthotel\WordPress\ContentObserver\Logger;
 
 use Palasthotel\WordPress\ContentObserver\Interfaces\ILogger;
 
-/**
- * @property bool debug
- */
 class Logger implements ILogger {
 
-	/**
-	 * DebugLogger constructor.
-	 *
-	 * @param bool $debug
-	 */
-	public function __construct($debug) {
+	private bool $debug;
+
+	public function __construct(bool $debug) {
 		$this->debug = $debug;
 	}
 

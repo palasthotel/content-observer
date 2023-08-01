@@ -3,18 +3,17 @@
 
 namespace Palasthotel\WordPress\ContentObserver\Database;
 
+use Palasthotel\WordPress\ContentObserver\Components\Database;
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
 use Palasthotel\WordPress\ContentObserver\Model\ModQueryArgs;
-use wpdb;
 
-/**
- * @property  wpdb $wpdb
- * @property string table
- */
-class Modifications extends _DB {
 
-	public function __construct() {
-		parent::__construct( "content_observer_modifications" );
+class Modifications extends Database {
+
+	private string $table;
+
+	public function init() {
+		$this->table = $this->wpdb->prefix. "content_observer_modifications";
 	}
 
 	/**
@@ -68,7 +67,7 @@ class Modifications extends _DB {
 		}
 
 		$results = $this->wpdb->get_results(
-			"SELECT site_id, content_id, content_type, mod_time, mod_type FROM $this->table $where ORDER BY mod_time ASC $limitQuery",
+			"SELECT site_id, content_id, content_type, mod_time, mod_type FROM $this->table $where ORDER BY mod_time DESC $limitQuery",
 		);
 
 		return array_map( function ( $row ) {
@@ -127,8 +126,9 @@ class Modifications extends _DB {
 	/**
 	 * create tables if they do not exist
 	 */
-	function createTable() {
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	public function createTables() {
+		parent::createTables();
+
 		\dbDelta( "CREATE TABLE IF NOT EXISTS $this->table
 			(
 			 site_id int(8) unsigned DEFAULT 0,
