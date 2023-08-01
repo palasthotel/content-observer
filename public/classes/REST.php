@@ -20,7 +20,7 @@ class REST extends Component {
 	}
 
 	public function getRestBaseUrl( string $site_url ): string {
-		return trim( $site_url ) . "/" . rest_get_url_prefix() . "/" . self::NAMESPACE;
+		return untrailingslashit( $site_url ) . "/" . rest_get_url_prefix() . "/" . self::NAMESPACE;
 	}
 
 	public function getPingUrl( string $site_url ): string {

@@ -24,10 +24,8 @@ class RemoteRequest extends Component {
 		$args = array(
 			'headers' => $headers,
 		);
-		$response = wp_remote_get(
-			add_query_arg( Plugin::REQUEST_PARAM_API_KEY, $site_api_key, $url ),
-			$args
-		);
+		$finalUrl = add_query_arg( Plugin::REQUEST_PARAM_API_KEY, $site_api_key, $url );
+		$response = wp_remote_get( $finalUrl, $args );
 		if($response instanceof WP_Error) return $response;
 		return json_decode($response['body']);
 	}

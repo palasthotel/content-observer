@@ -14,7 +14,10 @@ class Ajax extends Component {
 	}
 
 	public function fetch_modifications(){
-		if(!current_user_can("manage_options")) return;
+		if(!current_user_can("manage_options")) {
+			wp_send_json_error(["message" => "No permission"]);
+			return;
+		}
 		$numberOfModifications = $this->plugin->tasks->fetch($this->getSiteId());
 		wp_send_json_success([
 			"number_of_modifications" => $numberOfModifications,
@@ -22,7 +25,10 @@ class Ajax extends Component {
 	}
 
 	public function notify(){
-		if(!current_user_can("manage_options")) return;
+		if(!current_user_can("manage_options")) {
+			wp_send_json_error(["message" => "No permission"]);
+			return;
+		}
 		$result = $this->plugin->tasks->notify($this->getSiteId());
 		if(is_wp_error($result)){
 			error_log($result->get_error_message());
@@ -36,7 +42,10 @@ class Ajax extends Component {
 	}
 
 	public function apply(){
-		if(!current_user_can("manage_options")) return;
+		if(!current_user_can("manage_options")) {
+			wp_send_json_error(["message" => "No permission"]);
+			return;
+		}
 		$since = intval($_GET["since"]);
 		$result = $this->plugin->tasks->doModificationsHook($since);
 		wp_send_json_success([
