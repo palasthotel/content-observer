@@ -13,19 +13,12 @@ use Palasthotel\WordPress\ContentObserver\Model\Site;
 
 class Repository extends Component {
 
+	private Modifications $modificationsDB;
+	private Sites $sitesDB;
 	/**
-	 * @var Modifications
+	 * @var Site[]|null
 	 */
-	private $modificationsDB;
-
-	/**
-	 * @var Sites
-	 */
-	private $sitesDB;
-	/**
-	 * @var Site[]
-	 */
-	private $sitesCache;
+	private ?array $sitesCache = null;
 
 
 	public function onCreate() {
@@ -33,7 +26,6 @@ class Repository extends Component {
 
 		$this->modificationsDB = new Modifications();
 		$this->sitesDB         = new Sites();
-		$this->sitesCache = [];
 	}
 
 	/**
@@ -49,7 +41,7 @@ class Repository extends Component {
 	/**
 	 * @return Site[]
 	 */
-	public function getSites(){
+	public function getSites(): array{
 		if(null == $this->sitesCache){
 			$this->sitesCache = $this->sitesDB->getAll();
 		}
@@ -61,7 +53,7 @@ class Repository extends Component {
 	 *
 	 * @return Site|null
 	 */
-	public function getSite($id){
+	public function getSite($id): ? Site {
 		foreach ($this->getSites() as $site){
 			if($id === $site->id){
 				return $site;
@@ -133,7 +125,6 @@ class Repository extends Component {
 	 * @return bool|int
 	 */
 	public function setModification($modification){
-		$this->modificationsCache = [];
 		return $this->modificationsDB->setModification($modification);
 	}
 
@@ -144,7 +135,6 @@ class Repository extends Component {
 	 */
 	public function deleteSite( $site_id ) {
 		$this->sitesCache = null;
-		unset($this->modificationsCache[$site_id]);
 		$this->modificationsDB->deleteBySiteId($site_id);
 		return $this->sitesDB->delete($site_id);
 	}

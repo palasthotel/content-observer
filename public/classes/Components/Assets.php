@@ -5,10 +5,11 @@ namespace Palasthotel\WordPress\ContentObserver\Components;
 
 /**
  * Class Assets
- * @property \Palasthotel\WordPress\ContentObserver\Plugin plugin
  * @version 0.1.2
  */
 class Assets {
+
+	private \Palasthotel\WordPress\ContentObserver\Plugin $plugin;
 
 	public function __construct( \Palasthotel\WordPress\ContentObserver\Plugin $plugin ) {
 		$this->plugin = $plugin;
