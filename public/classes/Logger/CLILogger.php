@@ -19,4 +19,8 @@ class CLILogger implements ILogger {
 	function error( $msg ) {
 		\WP_CLI::error($msg);
 	}
+
+	function warning( $msg ) {
+		\WP_CLI::warning($msg);
+	}
 }

@@ -176,23 +176,27 @@ class Tasks extends Component {
 
 			foreach ( $chunks as $chunk ) {
 				$this->logger->line( "Send Chunk: " . json_encode( $chunk ) );
+				$modificationsUrl = $rest->getModificationsUrl( $observer->url );
+				$requestBody = [
+					"site_url" => $mySite->url,
+					"mods"     => $chunk,
+				];
 				$response = $request->post(
-					$rest->getModificationsUrl( $observer->url ),
+					$modificationsUrl,
 					$observer->api_key,
-					[
-						"site_url" => $mySite->url,
-						"mods"     => $chunk,
-					]
+					$requestBody
 				);
 
 				$this->logger->line(json_encode($response));
 				if ( $response instanceof WP_Error ) {
 					$this->setTaskIsRunning($taskId, false);
-					$this->logger->error( $response->get_error_message() );
+					$this->logger->warning( $response->get_error_message() );
 					return false;
 				} else if ( ! isset( $response->success ) || ! $response->success ) {
 					$this->setTaskIsRunning($taskId, false);
-					$this->logger->error( "POST notifications has success response " . json_encode( $response ) );
+					$this->logger->warning( "POST Request-URL $modificationsUrl");
+					$this->logger->warning( "POST Request-Body " . json_encode( $requestBody ) );
+					$this->logger->warning( "POST notifications has success response " . json_encode( $response ) );
 					return false;
 				}
 			}

@@ -31,4 +31,8 @@ class Logger implements ILogger {
 	function error( $msg ) {
 		error_log($msg);
 	}
+
+	function warning( $msg ) {
+		error_log($msg);
+	}
 }
