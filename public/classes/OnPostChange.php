@@ -24,7 +24,7 @@ class OnPostChange extends Component {
 
 			foreach ($taxonomies as $tax){
 				$terms = get_the_terms($post, $tax);
-				if(is_wp_error($terms)) continue;
+				if(is_wp_error($terms) || !is_array($terms)) continue;
 				foreach ($terms as $term){
 					$this->plugin->repo->setModification(
 						Modification::build($term->term_id, "taxonomy:$tax")->update()
