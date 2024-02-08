@@ -26,19 +26,19 @@ class Tasks extends Component {
 		$this->logger = $logger;
 	}
 
-	private function getTaskIdOptionKey($taskId){
+	private function getTaskIdTransientKey($taskId){
 		return Plugin::DOMAIN."_task_".$taskId."_is_running";
 	}
 
 	private function isTaskRunning($taskId){
-		return get_option($this->getTaskIdOptionKey($taskId), false) === "true";
+		return get_transient($this->getTaskIdTransientKey($taskId)) === "true";
 	}
 
 	private function setTaskIsRunning($taskId, $isRunning){
 		if($isRunning){
-			update_option($this->getTaskIdOptionKey($taskId), "true");
+			set_transient($this->getTaskIdTransientKey($taskId), "true", 60*60);
 		} else {
-			delete_option($this->getTaskIdOptionKey($taskId));
+			delete_transient($this->getTaskIdTransientKey($taskId));
 		}
 	}
 
