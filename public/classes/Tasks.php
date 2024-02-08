@@ -139,6 +139,7 @@ class Tasks extends Component {
 
 		$taskId = "notify";
 		if($this->isTaskRunning($taskId)){
+			$this->logger->warning( "Task is already running" );
 			return new WP_Error("Task is already running");
 		}
 		$this->setTaskIsRunning($taskId, true);

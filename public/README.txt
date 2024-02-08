@@ -29,6 +29,9 @@ Efficiently observe content changes between wordpress instances
 
 == Changelog ==
 
+= 1.2.1 =
+* Feature: Admin notices logger
+
 = 1.2.0 =
 * New modifications page
 

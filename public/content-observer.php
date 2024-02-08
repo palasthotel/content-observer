@@ -18,7 +18,12 @@
 
 namespace Palasthotel\WordPress\ContentObserver;
 
+use Palasthotel\WordPress\ContentObserver\Logger\AdminNoticeLogger;
 use Palasthotel\WordPress\ContentObserver\Logger\CLILogger;
+
+if(!defined('CONTENT_OBSERVER_USE_ADMIN_NOTICE_LOGGER')){
+	define('CONTENT_OBSERVER_USE_ADMIN_NOTICE_LOGGER', false);
+}
 
 require_once dirname( __FILE__ ) . "/vendor/autoload.php";
 
@@ -50,6 +55,7 @@ class Plugin extends Components\Plugin {
 	const OPTION_SCHEDULE_NOTIFY_OBSERVERS_IS_DISABLED = "_content_observer_schedule_notify_observers_is_disabled";
 	const OPTION_SCHEDULE_START_MODIFICATION_HOOK_IS_DISABLED = "_content_observer_schedule_start_modification_hook_is_disabled";
 	const OPTION_LAST_MODIFICATIONS_HOOK_RUN = "_content_observer_last_modifications_hook_run";
+    const OPTION_ADMIN_NOTICE_LOGS = "_content_observer_admin_notice_logs";
 
 	// ----------------------------------------------------------------------
 	// asset handles
@@ -90,8 +96,13 @@ class Plugin extends Components\Plugin {
 		$this->tasks         = new Tasks( $this );
 
 		if ( class_exists( "\WP_CLI" ) ) {
-			$this->tasks->setLogger( new CLILogger() );
 			\WP_CLI::add_command( 'content-observer', new CLI() );
+		}
+
+		if(CONTENT_OBSERVER_USE_ADMIN_NOTICE_LOGGER == true){
+			$this->tasks->setLogger(new AdminNoticeLogger());
+		} else if(class_exists( "\WP_CLI" )){
+			$this->tasks->setLogger( new CLILogger() );
 		}
 
 		if ( WP_DEBUG ) {
