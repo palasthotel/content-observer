@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Palasthotel\WordPress\ContentObserver;
-
 
 use Palasthotel\WordPress\ContentObserver\Components\Component;
 use Palasthotel\WordPress\ContentObserver\Interfaces\ILogger;
@@ -17,37 +15,37 @@ class Tasks extends Component {
 
 	private ILogger $logger;
 
-	public function onCreate() {
+	public function onCreate(): void {
 		parent::onCreate();
 		$this->logger = new Logger( WP_DEBUG );
 	}
 
-	public function setLogger( ILogger $logger ) {
+	public function setLogger( ILogger $logger ): void {
 		$this->logger = $logger;
 	}
 
-	private function getTaskIdTransientKey($taskId){
-		return Plugin::DOMAIN."_task_".$taskId."_is_running";
+	private function getTaskIdTransientKey( string $taskId ): string {
+		return Plugin::DOMAIN . "_task_" . $taskId . "_is_running";
 	}
 
-	private function isTaskRunning($taskId){
-		return get_transient($this->getTaskIdTransientKey($taskId)) === "true";
+	private function isTaskRunning( string $taskId ): bool {
+		return get_transient( $this->getTaskIdTransientKey( $taskId ) ) === "true";
 	}
 
-	private function setTaskIsRunning($taskId, $isRunning){
-		if($isRunning){
-			set_transient($this->getTaskIdTransientKey($taskId), "true", 60*60);
+	private function setTaskIsRunning( string $taskId, bool $isRunning ): void {
+		if ( $isRunning ) {
+			set_transient( $this->getTaskIdTransientKey( $taskId ), "true", 60 * 60 );
 		} else {
-			delete_transient($this->getTaskIdTransientKey($taskId));
+			delete_transient( $this->getTaskIdTransientKey( $taskId ) );
 		}
 	}
 
 	/**
-	 * @param null|int $site_id
+	 * @param int|null $site_id
 	 *
 	 * @return bool[]
 	 */
-	public function ping( $site_id = null ) {
+	public function ping( ?int $site_id = null ): array {
 		$rest    = $this->plugin->rest;
 		$request = $this->plugin->remoteRequest;
 
@@ -77,25 +75,26 @@ class Tasks extends Component {
 	}
 
 	/**
-	 * @param null|int $site_id all or one specific site
+	 * @param int|null $site_id all or one specific site
 	 *
 	 * @return bool|WP_Error
 	 */
-	public function connect( $site_id = null ) {
+	public function connect( ?int $site_id = null ): WP_Error|bool {
 		$rest    = $this->plugin->rest;
 		$request = $this->plugin->remoteRequest;
 
 		$taskId = "connect";
-		if($this->isTaskRunning($taskId)){
-			return new WP_Error("Task is already running");
+		if ( $this->isTaskRunning( $taskId ) ) {
+			return new WP_Error( "Task is already running" );
 		}
-		$this->setTaskIsRunning($taskId, true);
+		$this->setTaskIsRunning( $taskId, true );
 
 		$sites = $this->getSites( $site_id );
 
 		if ( null === $sites ) {
-			$this->setTaskIsRunning($taskId, false);
+			$this->setTaskIsRunning( $taskId, false );
 			$this->logger->error( "Could not find site with id " . $site_id );
+
 			return false;
 		}
 
@@ -107,42 +106,46 @@ class Tasks extends Component {
 				"relation_type"   => $site->relation_type === Site::OBSERVER ? Site::OBSERVABLE : Site::OBSERVER,
 			] );
 			if ( $response instanceof WP_Error ) {
-				$this->setTaskIsRunning($taskId, false);
+				$this->setTaskIsRunning( $taskId, false );
 				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url, api_key: $site->api_key -> {$response->get_error_message()}" );
+
 				return false;
 			}
 			if ( ! is_object( $response ) ) {
-				$this->setTaskIsRunning($taskId, false);
+				$this->setTaskIsRunning( $taskId, false );
 				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url, api_key: $site->api_key -> response is no object" );
+
 				return false;
 			} else if ( ! isset( $response->success ) || ! $response->success ) {
-				$this->setTaskIsRunning($taskId, false);
+				$this->setTaskIsRunning( $taskId, false );
 				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url, api_key: $site->api_key -> response was no success " . json_encode( $response ) );
+
 				return false;
 			}
-			$this->plugin->repo->setSite($site->setRegistrationTime(time()));
+			$this->plugin->repo->setSite( $site->setRegistrationTime( time() ) );
 			$this->logger->line( "Connection with $site->url was updated." );
 		}
 
 		$this->logger->success( "All sites connection updated." );
-		$this->setTaskIsRunning($taskId, false);
+		$this->setTaskIsRunning( $taskId, false );
 
 		return true;
 	}
 
 	/**
-	 * @param null|int $site_id
+	 * @param int|null $site_id
 	 *
 	 * @return bool|WP_Error
 	 */
-	public function notify( $site_id = null ) {
+	public function notify( ?int $site_id = null ): WP_Error|bool {
 
 		$taskId = "notify";
-		if($this->isTaskRunning($taskId)){
+		if ( $this->isTaskRunning( $taskId ) ) {
 			$this->logger->warning( "Task is already running" );
-			return new WP_Error("Task is already running");
+
+			return new WP_Error( "Task is already running" );
 		}
-		$this->setTaskIsRunning($taskId, true);
+		$this->setTaskIsRunning( $taskId, true );
 
 		$repo      = $this->plugin->repo;
 		$rest      = $this->plugin->rest;
@@ -160,8 +163,8 @@ class Tasks extends Component {
 			$this->logger->line( "Notify about modifications site $observer->id -> $observer->url" );
 
 			$args = ModQueryArgs::build()
-			                    ->since($observer->last_notification_time)
-								->siteId(Site::MY_SITE);
+			                    ->since( $observer->last_notification_time )
+			                    ->siteId( Site::MY_SITE );
 
 			$mods = $repo->getModifications( $args );
 
@@ -178,33 +181,36 @@ class Tasks extends Component {
 			foreach ( $chunks as $chunk ) {
 				$this->logger->line( "Send Chunk: " . json_encode( $chunk ) );
 				$modificationsUrl = $rest->getModificationsUrl( $observer->url );
-				$requestBody = [
+				$requestBody      = [
 					"site_url" => $mySite->url,
 					"mods"     => $chunk,
 				];
-				$response = $request->post(
+				$response         = $request->post(
 					$modificationsUrl,
 					$observer->api_key,
 					$requestBody
 				);
 
-				$this->logger->line(json_encode($response));
+				$this->logger->line( json_encode( $response ) );
 				if ( $response instanceof WP_Error ) {
-					$this->setTaskIsRunning($taskId, false);
+					$this->setTaskIsRunning( $taskId, false );
 					$this->logger->warning( $response->get_error_message() );
+
 					return false;
 				} else if ( ! isset( $response->success ) || ! $response->success ) {
-					$this->setTaskIsRunning($taskId, false);
-					$this->logger->warning( "POST Request-URL $modificationsUrl");
+					$this->setTaskIsRunning( $taskId, false );
+					$this->logger->warning( "POST Request-URL $modificationsUrl" );
 					$this->logger->warning( "POST Request-Body " . json_encode( $requestBody ) );
 					$this->logger->warning( "POST notifications has success response " . json_encode( $response ) );
+
 					return false;
 				}
 			}
 			$repo->setSite( $observer->setLastNotificationTime( $runTime ) );
 		}
 
-		$this->setTaskIsRunning($taskId, false);
+		$this->setTaskIsRunning( $taskId, false );
+
 		return true;
 	}
 
@@ -216,18 +222,18 @@ class Tasks extends Component {
 	 * @return int
 	 */
 	public function fetch(
-		$site_id = null,
-		$allModifications = false,
-		$numberOfModsPerRequest = 100
+		?int $site_id = null,
+		bool $allModifications = false,
+		int $numberOfModsPerRequest = 100
 	): int {
-		$repo        = $this->plugin->repo;
-		$rest        = $this->plugin->rest;
-		$request     = $this->plugin->remoteRequest;
-		$observables = $repo->getObservables();
-		$runTime     = time();
-		$success     = [];
+		$repo                  = $this->plugin->repo;
+		$rest                  = $this->plugin->rest;
+		$request               = $this->plugin->remoteRequest;
+		$observables           = $repo->getObservables();
+		$runTime               = time();
+		$success               = [];
 		$numberOfModifications = 0;
-		$period      = $allModifications ? "all" : "new";
+		$period                = $allModifications ? "all" : "new";
 		foreach ( $observables as $observable ) {
 			if ( null !== $site_id && $site_id !== $observable->id ) {
 				$this->logger->line( "Skipped $observable->url" );
@@ -236,23 +242,23 @@ class Tasks extends Component {
 
 			$this->logger->line( "Fetch $period modifications from Site $observable->id -> $observable->url" );
 
-			$url = $rest->getModificationsUrl( $observable->url );
+			$url  = $rest->getModificationsUrl( $observable->url );
 			$page = 1;
 			do {
 
-				$pagedUrl = add_query_arg([
-					"page" => $page,
+				$pagedUrl = add_query_arg( [
+					"page"   => $page,
 					"number" => $numberOfModsPerRequest
-				], $url);
+				], $url );
 
-				$this->logger->line("Fetch $pagedUrl");
+				$this->logger->line( "Fetch $pagedUrl" );
 
 				$response = $request->get(
 					$allModifications ? $pagedUrl : add_query_arg( "since", $observable->last_notification_time, $pagedUrl ),
 					$observable->api_key
 				);
 
-				$this->logger->line("Fetch ".json_encode($response));
+				$this->logger->line( "Fetch " . json_encode( $response ) );
 
 				if ( $response instanceof WP_Error ) {
 					$this->logger->error( $response->get_error_message() );
@@ -265,19 +271,19 @@ class Tasks extends Component {
 					break;
 				}
 
-				foreach ($response->mods as $mod){
+				foreach ( $response->mods as $mod ) {
 
 					$repo->setModification(
-						Modification::fromArray((array)$mod)
-							->setSiteId($observable->id)
-							->setModified($runTime)
+						Modification::fromArray( (array) $mod )
+						            ->setSiteId( $observable->id )
+						            ->setModified( $runTime )
 					);
-					$numberOfModifications++;
+					$numberOfModifications ++;
 				}
 
-				$page++;
+				$page ++;
 
-			} while ( count($response->mods) > 0 && $response->pages >= $page );
+			} while ( count( $response->mods ) > 0 && $response->pages >= $page );
 
 			if ( ! isset( $success[ $observable->id ] ) ) {
 				$success[ $observable->id ] = true;
@@ -292,28 +298,29 @@ class Tasks extends Component {
 	 * publish modifications
 	 *
 	 */
-	public function doModificationsHook( ?int $since = null): int{
-		if(null === $since || $since <= 0){
-			$last_hook_run = intval(get_option(Plugin::OPTION_LAST_MODIFICATIONS_HOOK_RUN, 0));
+	public function doModificationsHook( ?int $since = null ): int {
+		if ( null === $since || $since <= 0 ) {
+			$last_hook_run = intval( get_option( Plugin::OPTION_LAST_MODIFICATIONS_HOOK_RUN, 0 ) );
 		} else {
 			$last_hook_run = $since;
 		}
 
-		$this->logger->line("Run modifications since $last_hook_run");
+		$this->logger->line( "Run modifications since $last_hook_run" );
 
-		$runTime = time();
+		$runTime                      = time();
 		$numberOfAppliedModifications = 0;
-		foreach ($this->plugin->repo->getSites() as $site){
-			$args = ModQueryArgs::build()->siteId($site->id)->since($last_hook_run);
+		foreach ( $this->plugin->repo->getSites() as $site ) {
+			$args = ModQueryArgs::build()->siteId( $site->id )->since( $last_hook_run );
 			do {
-				$mods = $this->plugin->repo->getModifications($args);
-				$this->logger->line("Found ".count($mods)." modification of site $site->slug, page $args->page");
-				$this->runModifications($site, $mods);
-				$args->page($args->page+1);
-				$numberOfAppliedModifications++;
-			} while(count($mods) > 0);
+				$mods = $this->plugin->repo->getModifications( $args );
+				$this->logger->line( "Found " . count( $mods ) . " modification of site $site->slug, page $args->page" );
+				$this->runModifications( $site, $mods );
+				$args->page( $args->page + 1 );
+				$numberOfAppliedModifications ++;
+			} while ( count( $mods ) > 0 );
 		}
-		update_option(Plugin::OPTION_LAST_MODIFICATIONS_HOOK_RUN, $runTime);
+		update_option( Plugin::OPTION_LAST_MODIFICATIONS_HOOK_RUN, $runTime );
+
 		return $numberOfAppliedModifications;
 	}
 
@@ -323,9 +330,9 @@ class Tasks extends Component {
 	 *
 	 * @return void
 	 */
-	public function runModifications(Site $site, array $mods){
-		do_action(Plugin::ACTION_ON_MODIFICATIONS, SiteModificationAction::build($site, $mods));
-		do_action( sprintf(Plugin::ACTION_ON_SITE_MODIFICATIONS, $site->id), SiteModificationAction::build($site, $mods));
+	public function runModifications( Site $site, array $mods ): void {
+		do_action( Plugin::ACTION_ON_MODIFICATIONS, SiteModificationAction::build( $site, $mods ) );
+		do_action( sprintf( Plugin::ACTION_ON_SITE_MODIFICATIONS, $site->id ), SiteModificationAction::build( $site, $mods ) );
 	}
 
 	/**
@@ -333,7 +340,7 @@ class Tasks extends Component {
 	 *
 	 * @return Site[]|null
 	 */
-	private function getSites( $site_id ) {
+	private function getSites( $site_id ): ?array {
 		if ( null != $site_id ) {
 			$site_id = intval( $site_id );
 			$site    = $this->plugin->repo->getSite( $site_id );

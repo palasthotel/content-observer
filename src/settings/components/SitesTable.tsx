@@ -1,8 +1,22 @@
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 import {useSiteTest} from "../hooks/use-api";
+import {Site} from "../../@types/Settings";
 
-const SiteRow = ({site, onDelete, hasDeleteFlag, onUndelete})=>{
+type SiteRowProps = {
+    site: Site,
+    onDelete: () => void,
+    hasDeleteFlag: boolean,
+    onUndelete: () => void,
+}
+const SiteRow = (
+    {
+        site,
+        onDelete,
+        hasDeleteFlag,
+        onUndelete
+    }: SiteRowProps
+)=>{
 
     const {isSuccess, isTesting, testAgain} = useSiteTest(site.url, site.api_key);
 
@@ -63,7 +77,22 @@ const SiteRow = ({site, onDelete, hasDeleteFlag, onUndelete})=>{
     </tr>
 }
 
-const SitesTable = ({sites, isLoading, deletes, onDelete, onUndelete})=>{
+type SitesTableProps = {
+    sites: Site[],
+    isLoading: boolean,
+    deletes: (number|null)[],
+    onDelete: (site: Site) => void,
+    onUndelete: (site: Site) => void,
+}
+const SitesTable = (
+    {
+        sites,
+        isLoading,
+        deletes,
+        onDelete,
+        onUndelete
+    }: SitesTableProps
+)=>{
     return <table className="wp-list-table widefat fixed striped">
         <thead>
             <tr>
@@ -78,7 +107,7 @@ const SitesTable = ({sites, isLoading, deletes, onDelete, onUndelete})=>{
             {sites.map(s=> <SiteRow
                 key={s.url}
                 site={s}
-                hasDeleteFlag={deletes.includes(s.id)}
+                hasDeleteFlag={(!s.id ? false : deletes.includes(s.id))}
                 onDelete={()=> onDelete(s)}
                 onUndelete={()=> onUndelete(s)}
             />)}

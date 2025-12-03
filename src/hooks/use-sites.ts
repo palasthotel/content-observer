@@ -14,7 +14,6 @@ export const useSites = (): UseSites => {
     return state;
 }
 
-
 export const useSelectSite = () => {
     const cacheKey = "content-observer:modifications(selected_site_id)"
     const [state, setState] = useState(localStorage.getItem(cacheKey) ?? "0");

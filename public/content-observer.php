@@ -61,7 +61,9 @@ class Plugin extends Components\Plugin {
 	// asset handles
 	// ----------------------------------------------------------------------
 	const HANDLE_MODIFICATIONS_JS = "content-observer-modifications-js";
+	const MODIFICATIONS_NONCE = "content_observer_modifications_nonce";
 	const HANDLE_SETTINGS_JS = "content-observer-settings-js";
+	const SETTINGS_NONCE = "content_observer_settings_nonce";
 
 	// ----------------------------------------------------------------------
 	// other constants
