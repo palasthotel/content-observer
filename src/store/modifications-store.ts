@@ -22,7 +22,6 @@ export const fetchSiteModifications = (site_id: number) => {
     const data = new FormData();
     data.append("action", "content_observer_fetch_modifications");
     data.append("site_id", site_id.toString());
-    console.log(getAjaxUrl());
     return fetch(
         getAjaxUrl(),
         {
