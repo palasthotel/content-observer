@@ -19,14 +19,13 @@ type FetchSiteModificationsResponse = {
     }
 }
 export const fetchSiteModifications = (site_id: number) => {
-    const data = new FormData();
-    data.append("action", "content_observer_fetch_modifications");
-    data.append("site_id", site_id.toString());
+    const params = new URLSearchParams({
+        action: "content_observer_fetch_modifications",
+        site_id: site_id.toString(),
+    });
     return fetch(
-        getAjaxUrl(),
+        getAjaxUrl() + "?" + params.toString(),
         {
-            method: "POST",
-            body: data,
             credentials: "include",
         }
     )
@@ -38,15 +37,14 @@ export const fetchSiteModifications = (site_id: number) => {
 type NotifyResponse = { success: true } | { success: false, data: { message: string } }
 
 export const notify = (site_id: number) => {
-    const data = new FormData();
-    data.append("action", "content_observer_notify");
-    data.append("site_id", site_id.toString());
+    const params = new URLSearchParams({
+        action: "content_observer_notify",
+        site_id: site_id.toString(),
+    });
 
     return fetch(
-        getAjaxUrl(),
+        getAjaxUrl() + "?" + params.toString(),
         {
-            method: "POST",
-            body: data,
             credentials: "include",
         }
     )
@@ -62,15 +60,13 @@ type ApplyModificationsResponse = {
     }
 }
 export const applyModifications = (since: number) => {
-    const data = new FormData();
-    data.append("action", "content_observer_apply");
-    data.append("since", since.toString());
-
+    const params = new URLSearchParams({
+        action: "content_observer_apply",
+        since: since.toString(),
+    });
     return fetch(
-        getAjaxUrl(),
+        getAjaxUrl() + "?" + params.toString(),
         {
-            method: "POST",
-            body: data,
             credentials: "include",
         }
     )
