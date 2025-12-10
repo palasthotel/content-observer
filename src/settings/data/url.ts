@@ -1,5 +1,4 @@
-
-export const isValidHttpUrl = (string) => {
+export const isValidHttpUrl = (string: string) => {
     let url;
     try {
         url = new URL(string);
@@ -7,7 +6,7 @@ export const isValidHttpUrl = (string) => {
         return false;
     }
 
-    if(url.hostname.length < 3 || url.hostname.indexOf(".") <= 0 ){
+    if (url.hostname.length < 3 || url.hostname.indexOf(".") <= 0) {
         return false;
     }
 

@@ -1,39 +1,44 @@
 import {useEffect, useState} from '@wordpress/element';
 import {useSites} from "../hooks/use-api";
 import {filterObservables, filterObservers} from "../data/filter";
-import SitesTable from "./SitesTable.jsx";
-import SiteEditor from "./SiteEditor.jsx";
-
-
+import SitesTable from "./SitesTable";
+import SiteEditor from "./SiteEditor";
+import {Site} from "../../@types/Settings";
 const Settings = () => {
 
-    const {sites, isFetching, isSaving, update, error} = useSites();
+    const {
+        sites,
+        isFetching,
+        isSaving,
+        update,
+        error
+    } = useSites();
 
-    const [deletes, setDeletes] = useState([]);
-    const [added, setAdded] = useState([]);
+    const [deletes, setDeletes] = useState<(number | null)[]>([]);
+    const [added, setAdded] = useState<Site[]>([]);
 
-    const onDeleteSite = (site)=>{
-        setDeletes([...deletes, site.id]);
+    const onDeleteSite = (site: Site) => {
+        setDeletes(prev => [...prev, site.id ?? null]);
     }
-    const onUndeleteSite = (site)=>{
-        setDeletes(deletes.filter(id=>id !== site.id));
+    const onUndeleteSite = (site: Site) => {
+        setDeletes(prev => prev.filter(id => id !== site.id));
     }
-    const onAddSite = (site)=>{
-        setAdded(added=>[...added, site]);
+    const onAddSite = (site: Site) => {
+        setAdded(prev => [...prev, site]);
     }
 
     const dirtySites = [...sites, ...added];
 
-    const onSaveState = ()=>{
+    const onSaveState = () => {
         update({dirtySites, deletes});
     }
 
-    useEffect(()=>{
-        if(!isSaving && error.length === 0){
+    useEffect(() => {
+        if (!isSaving && error.length === 0) {
             setDeletes([]);
             setAdded([]);
         }
-    }, [isSaving])
+    }, [isSaving, error])
 
     return <>
         <h2>Observers</h2>
@@ -55,29 +60,28 @@ const Settings = () => {
             onDelete={onDeleteSite}
             onUndelete={onUndeleteSite}
         />
-        <hr />
+        <hr/>
         {isSaving ?
-            <p>Saving sites. <span className="spinner is-active" style={{float:"left"}} /></p>
-               :
+            <p>Saving sites. <span className="spinner is-active" style={{float: "left"}}/></p>
+            :
             <SiteEditor
                 label="Add site"
                 onSubmit={onAddSite}
             />
         }
 
-        <hr />
+        <hr/>
         {error.length ?
             <p>
                 Corrupt state: {error}<br/>
                 <a
-                    style={{cursor:"pointer"}}
-                    onClick={()=> window.location.reload()}
+                    style={{cursor: "pointer"}}
+                    onClick={() => window.location.reload()}
                 >reload page</a>
             </p>
             :
             <button className="button button-primary" onClick={onSaveState}>Save</button>
         }
-
     </>;
 }
 

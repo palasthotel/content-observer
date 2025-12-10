@@ -1,4 +1,3 @@
-import {ModificationResponse} from "../../@types/Modification";
 import {useModifications} from "../../hooks/use-modifications";
 import {useSelectSite, useSites} from "../../hooks/use-sites";
 import {useStyles} from './ModificationsList.styles';
@@ -116,7 +115,7 @@ const ModificationsList = () => {
                     const showResult = rowOperationResult.id == key;
                     const icon = rowOperationResult.success ? "✅" : "🚨"
                     return (
-                        <tr className={needApplyButton ? styles.firstRow : null } key={key}>
+                        <tr className={needApplyButton ? styles.firstRow : undefined } key={key}>
                             <td>{mod.type}</td>
                             <td>{mod.content_type}</td>
                             <td>{mod.content_id}</td>

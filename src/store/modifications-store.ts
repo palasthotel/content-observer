@@ -1,11 +1,11 @@
 import {ModificationsQuery, ModificationsResponse} from "../@types/Modification";
 import apiFetch from "@wordpress/api-fetch";
-import {getApiKey} from "./global";
+import {getAjaxUrl, getApiKeyPair} from "./global";
 
 export const fetchModifications = async (query: ModificationsQuery = {}) => {
     const params = new URLSearchParams({
         ...(query as Record<string, string>),
-        ...getApiKey(),
+        ...getApiKeyPair(),
     });
     return await apiFetch<ModificationsResponse>({
         path: "/content-sync/v1/modifications?" + params.toString(),
@@ -19,8 +19,12 @@ type FetchSiteModificationsResponse = {
     }
 }
 export const fetchSiteModifications = (site_id: number) => {
+    const params = new URLSearchParams({
+        action: "content_observer_fetch_modifications",
+        site_id: site_id.toString(),
+    });
     return fetch(
-        "/wp-admin/admin-ajax.php?action=content_observer_fetch_modifications&site_id="+site_id,
+        getAjaxUrl() + "?" + params.toString(),
         {
             credentials: "include",
         }
@@ -33,8 +37,13 @@ export const fetchSiteModifications = (site_id: number) => {
 type NotifyResponse = { success: true } | { success: false, data: { message: string } }
 
 export const notify = (site_id: number) => {
+    const params = new URLSearchParams({
+        action: "content_observer_notify",
+        site_id: site_id.toString(),
+    });
+
     return fetch(
-        "/wp-admin/admin-ajax.php?action=content_observer_notify&site_id="+site_id,
+        getAjaxUrl() + "?" + params.toString(),
         {
             credentials: "include",
         }
@@ -51,8 +60,12 @@ type ApplyModificationsResponse = {
     }
 }
 export const applyModifications = (since: number) => {
+    const params = new URLSearchParams({
+        action: "content_observer_apply",
+        since: since.toString(),
+    });
     return fetch(
-        "/wp-admin/admin-ajax.php?action=content_observer_apply&since="+since,
+        getAjaxUrl() + "?" + params.toString(),
         {
             credentials: "include",
         }
