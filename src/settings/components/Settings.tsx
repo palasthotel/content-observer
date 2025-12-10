@@ -4,7 +4,6 @@ import {filterObservables, filterObservers} from "../data/filter";
 import SitesTable from "./SitesTable";
 import SiteEditor from "./SiteEditor";
 import {Site} from "../../@types/Settings";
-
 const Settings = () => {
 
     const {

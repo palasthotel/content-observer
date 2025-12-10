@@ -18,7 +18,7 @@ class Assets extends Component {
 			Plugin::HANDLE_MODIFICATIONS_JS,
 			"ContentObserver",
 			[
-				"ajax_url" => admin_url( "admin-ajax.php" ),
+				"ajax_url"    => admin_url( "admin-ajax.php" ),
 				"apiKeyParam" => Plugin::REQUEST_PARAM_API_KEY,
 				"apiKeyValue" => $this->plugin->settings->getApiKey(),
 			]
@@ -35,10 +35,10 @@ class Assets extends Component {
 		);
 		wp_localize_script(
 			Plugin::HANDLE_SETTINGS_JS,
-			"ContentObserverSettings",
+			"ContentObserver",
 			[
-				"ajax_url" => admin_url( "admin-ajax.php" ),
-				"apiKeyValue"             => $this->plugin->settings->getApiKey(),
+				"ajax_url"           => admin_url( "admin-ajax.php" ),
+				"apiKeyValue"        => $this->plugin->settings->getApiKey(),
 				"apiNamespace"       => REST::NAMESPACE,
 				"pingUrlApiKeyParam" => Plugin::REQUEST_PARAM_API_KEY,
 				"pingUrl"            => $this->plugin->rest->getPingUrl( "" ),

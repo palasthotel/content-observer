@@ -1,11 +1,11 @@
 import {ModificationsQuery, ModificationsResponse} from "../@types/Modification";
 import apiFetch from "@wordpress/api-fetch";
-import {getAjaxUrl, getApiKey} from "./global";
+import {getAjaxUrl, getApiKeyPair} from "./global";
 
 export const fetchModifications = async (query: ModificationsQuery = {}) => {
     const params = new URLSearchParams({
         ...(query as Record<string, string>),
-        ...getApiKey(),
+        ...getApiKeyPair(),
     });
     return await apiFetch<ModificationsResponse>({
         path: "/content-sync/v1/modifications?" + params.toString(),

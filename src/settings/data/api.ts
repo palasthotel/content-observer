@@ -1,5 +1,5 @@
 import apiFetch from "@wordpress/api-fetch";
-import {getApiNamespace, getPingUrlApiKeyParam, getApiKey} from "../../store/global";
+import {getApiNamespace, getPingUrlApiKeyParam, getApiKeyPair, getApiKeyValue} from "../../store/global";
 import {Site} from "../../@types/Settings";
 
 type SitesResponse = Site[]
@@ -65,8 +65,8 @@ export const getTestSite = (
 ): TestSiteResult => {
     const apiNamespace = getApiNamespace();
     const pingUrlApiKeyParam = getPingUrlApiKeyParam();
-    const apiKey = getApiKey();
-    const url = `${apiNamespace}/ping?${pingUrlApiKeyParam}=${apiKey}&site_url=${encodeURIComponent(site_url)}&site_api_key=${site_api_key}`;
+    const apiKeyValue = getApiKeyValue();
+    const url = `${apiNamespace}/ping?${pingUrlApiKeyParam}=${apiKeyValue}&site_url=${encodeURIComponent(site_url)}&site_api_key=${site_api_key}`;
     const controller = new AbortController();
     const promise = (apiFetch({
         path: url,
@@ -89,8 +89,8 @@ export const getTestSite = (
 export const getTestSiteById = (site_id: string)=>{
     const apiNamespace = getApiNamespace();
     const pingUrlApiKeyParam = getPingUrlApiKeyParam();
-    const apiKey = getApiKey();
-    const url = `${apiNamespace}/ping?${pingUrlApiKeyParam}=${apiKey}&site_id=${site_id}`;
+    const apiKeyValue = getApiKeyValue();
+    const url = `${apiNamespace}/ping?${pingUrlApiKeyParam}=${apiKeyValue}&site_id=${site_id}`;
     const controller = new AbortController();
 
     return (apiFetch({

@@ -1,6 +1,5 @@
-import {ModificationsQuery, ModificationsResponse, SiteResponse} from "../@types/Modification";
+import {SiteResponse} from "../@types/Modification";
 import apiFetch from "@wordpress/api-fetch";
-import {getApiKey} from "./global";
 
 export const fetchSites = async () => {
     return await apiFetch<SiteResponse[]>({
