@@ -1,31 +1,50 @@
-=== BlockX ===
+=== Content Observer ===
 Contributors: palasthotel, edwardbock, janaeggebrecht
-Donate link: http://palasthotel.de/
-Tags: sync, developer, utils
-Requires at least: 5.0
-Tested up to: 6.2.2
+Donate link: https://palasthotel.de/
+Tags: sync, multisite, content, developer, wp-cli
+Requires at least: 6.0
+Tested up to: 7.1
 Requires PHP: 8.0
 Stable tag: 1.2.3
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Efficiently observe content changes between wordpress instances
+Efficiently observe content changes between WordPress instances.
 
 == Description ==
 
-Efficiently observe content changes between wordpress instances
+Content Observer tells one WordPress site what changed on another. The observed site records modifications - saved and deleted posts, and anything a theme or plugin reports - and the sites observing it receive them and react in their own code, for example to refresh a cached teaser list or a mirrored menu.
+
+The plugin moves no content by itself. It transports the modification (content id, content type, create/update/delete and time); what happens next is up to the `content_observer_on_modifications` action on the observing site.
+
+* Connect sites as observer, observable or both, secured by an API key
+* Modifications are pushed hourly (notify) or pulled on demand (fetch)
+* Admin pages to manage connections and inspect and apply modifications
+* WP-CLI commands for every step, so a system cron can replace WP-Cron
+
+Developer documentation: [github.com/palasthotel/wp-content-observer](https://github.com/palasthotel/wp-content-observer)
+
+== External services ==
+
+The plugin only talks to the WordPress sites an administrator connects under Content Observer → Manage. It sends them this site's URL, its API key and the list of modifications, and requests theirs. No other service is contacted.
 
 == Installation ==
 
-1. Upload `content-observer.zip` to the `/wp-content/plugins/` directory
-1. Extract the Plugin to a `content-observer` Folder
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Register oberservers and observables
-1. React to action when modifications are made
+1. Install the plugin on every site that observes or is observed, from Plugins > Add New or by uploading `content-observer.zip`
+1. Activate it
+1. Enter an API key under Content Observer → Settings on each site
+1. Connect the sites under Content Observer → Manage
+1. React to the `content_observer_on_modifications` action in your theme or plugin
 
 == Frequently Asked Questions ==
 
-== Screenshots ==
+= Does it copy posts between sites? =
+
+No. It reports which content changed. Copying or refreshing content is done by your own code reacting to the modifications.
+
+= Can I record changes other than posts? =
+
+Yes. `content_observer_add_modification( Modification::build( $id, 'my-type' )->update() )` records a modification of any content type.
 
 == Changelog ==
 
@@ -46,11 +65,3 @@ Efficiently observe content changes between wordpress instances
 
 = 1.0.0 =
 * First release
-
-== Upgrade Notice ==
-
-
-== Arbitrary section ==
-
-
-
