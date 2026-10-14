@@ -3,6 +3,8 @@
 
 namespace Palasthotel\WordPress\ContentObserver;
 
+defined( 'ABSPATH' ) || exit;
+
 
 class CLI {
 

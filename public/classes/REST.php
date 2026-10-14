@@ -10,6 +10,8 @@ use WP_Error;
 use WP_REST_Request;
 use WP_REST_Server;
 
+defined( 'ABSPATH' ) || exit;
+
 class REST extends Component {
 	const NAMESPACE = "content-sync/v1";
 	public function onCreate() {
@@ -185,7 +187,7 @@ class REST extends Component {
 					],
 					"relation_type"   => [
 						'validate_callback' => function ( $value, $request, $param ) {
-							return $value === Site::OBSERVER || Site::OBSERVABLE;
+							return in_array( $value, [ Site::OBSERVER, Site::OBSERVABLE, Site::BOTH ], true );
 						},
 					]
 				]
@@ -260,7 +262,7 @@ class REST extends Component {
 					"number"        => [
 						'default'           => 100,
 						'validate_callback' => function ( $value, $request, $param ) {
-							return "" . $value === intval( $value ) . "" && intval( $value ) > 0;
+							return "" . $value === intval( $value ) . "" && intval( $value ) > 0 && intval( $value ) <= 500;
 						},
 						'sanitize_callback' => function ( $value, $request, $param ) {
 							return intval( $value );
@@ -391,7 +393,7 @@ class REST extends Component {
 
 		}
 
-		foreach ( $deletes as $site_id ) {
+		foreach ( is_array( $deletes ) ? $deletes : [] as $site_id ) {
 			$this->plugin->repo->deleteSite( intval( $site_id ) );
 		}
 

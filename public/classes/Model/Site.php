@@ -2,6 +2,8 @@
 
 namespace Palasthotel\WordPress\ContentObserver\Model;
 
+defined( 'ABSPATH' ) || exit;
+
 class Site {
 
 	const MY_SITE = 0;

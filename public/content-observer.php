@@ -21,6 +21,8 @@ namespace Palasthotel\WordPress\ContentObserver;
 use Palasthotel\WordPress\ContentObserver\Logger\AdminNoticeLogger;
 use Palasthotel\WordPress\ContentObserver\Logger\CLILogger;
 
+defined( 'ABSPATH' ) || exit;
+
 if(!defined('CONTENT_OBSERVER_USE_ADMIN_NOTICE_LOGGER')){
 	define('CONTENT_OBSERVER_USE_ADMIN_NOTICE_LOGGER', false);
 }

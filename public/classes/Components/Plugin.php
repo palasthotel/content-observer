@@ -5,6 +5,8 @@ namespace Palasthotel\WordPress\ContentObserver\Components;
 use ReflectionClass;
 use ReflectionException;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * @version 0.1.2
  */

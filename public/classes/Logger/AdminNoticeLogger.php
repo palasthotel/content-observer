@@ -7,6 +7,8 @@ namespace Palasthotel\WordPress\ContentObserver\Logger;
 use Palasthotel\WordPress\ContentObserver\Interfaces\ILogger;
 use Palasthotel\WordPress\ContentObserver\Plugin;
 
+defined( 'ABSPATH' ) || exit;
+
 class AdminNoticeLogger implements ILogger {
 	private bool $started = false;
 

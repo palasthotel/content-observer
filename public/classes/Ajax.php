@@ -4,6 +4,8 @@ namespace Palasthotel\WordPress\ContentObserver;
 
 use Palasthotel\WordPress\ContentObserver\Components\Component;
 
+defined( 'ABSPATH' ) || exit;
+
 class Ajax extends Component {
 
 	const NONCE_ACTION = "content_observer_ajax";

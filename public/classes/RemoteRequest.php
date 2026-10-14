@@ -7,6 +7,8 @@ namespace Palasthotel\WordPress\ContentObserver;
 use Palasthotel\WordPress\ContentObserver\Components\Component;
 use WP_Error;
 
+defined( 'ABSPATH' ) || exit;
+
 class RemoteRequest extends Component {
 
 	/*

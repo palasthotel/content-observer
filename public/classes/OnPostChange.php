@@ -8,6 +8,8 @@ use Palasthotel\WordPress\ContentObserver\Components\Component;
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
 use WP_Post;
 
+defined( 'ABSPATH' ) || exit;
+
 class OnPostChange extends Component {
 
 	public function onCreate() {

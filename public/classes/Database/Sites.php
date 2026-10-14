@@ -6,6 +6,8 @@ namespace Palasthotel\WordPress\ContentObserver\Database;
 use Palasthotel\WordPress\ContentObserver\Components\Database;
 use Palasthotel\WordPress\ContentObserver\Model\Site;
 
+defined( 'ABSPATH' ) || exit;
+
 class Sites extends Database {
 
 	private string $table;

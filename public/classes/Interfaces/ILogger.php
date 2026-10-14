@@ -3,6 +3,8 @@
 
 namespace Palasthotel\WordPress\ContentObserver\Interfaces;
 
+defined( 'ABSPATH' ) || exit;
+
 
 interface ILogger {
 	function line($msg);

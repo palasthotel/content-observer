@@ -6,6 +6,8 @@ namespace Palasthotel\WordPress\ContentObserver;
 
 use Palasthotel\WordPress\ContentObserver\Components\Component;
 
+defined( 'ABSPATH' ) || exit;
+
 class Schedule extends Component {
 
 	public function onCreate() {

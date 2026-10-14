@@ -7,6 +7,8 @@ use Palasthotel\WordPress\ContentObserver\Components\Database;
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
 use Palasthotel\WordPress\ContentObserver\Model\ModQueryArgs;
 
+defined( 'ABSPATH' ) || exit;
+
 
 class Modifications extends Database {
 

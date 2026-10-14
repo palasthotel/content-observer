@@ -3,6 +3,8 @@
 
 namespace Palasthotel\WordPress\ContentObserver\Components;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Class Assets
  * @version 0.1.2

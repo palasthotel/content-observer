@@ -2,6 +2,8 @@
 
 namespace Palasthotel\WordPress\ContentObserver\Model;
 
+defined( 'ABSPATH' ) || exit;
+
 class Modification {
 
 	const CREATE = "create";

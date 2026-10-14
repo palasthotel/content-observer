@@ -11,6 +11,8 @@ use Palasthotel\WordPress\ContentObserver\Model\Site;
 use Palasthotel\WordPress\ContentObserver\Model\SiteModificationAction;
 use WP_Error;
 
+defined( 'ABSPATH' ) || exit;
+
 class Tasks extends Component {
 
 	private ILogger $logger;

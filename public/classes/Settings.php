@@ -6,6 +6,8 @@ namespace Palasthotel\WordPress\ContentObserver;
 
 use Palasthotel\WordPress\ContentObserver\Components\Component;
 
+defined( 'ABSPATH' ) || exit;
+
 class Settings extends Component {
 
 	public function onCreate() {

@@ -3,6 +3,8 @@
 
 namespace Palasthotel\WordPress\ContentObserver\Model;
 
+defined( 'ABSPATH' ) || exit;
+
 
 class SiteModificationAction {
 	/**
