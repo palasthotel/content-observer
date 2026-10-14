@@ -43,6 +43,12 @@ class REST extends Component {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'ping' ],
 				'permission_callback' => function ( WP_REST_Request $request ) {
+					// Testing a connection makes this site send requests, so only an
+					// administrator may ask for it. Other sites only ping without arguments.
+					if ( ! empty( $request->get_param( "site_url" ) ) || ! empty( $request->get_param( "site_id" ) ) ) {
+						return current_user_can( 'manage_options' );
+					}
+
 					return $this->plugin->settings->isValidApiKey( $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) );
 				},
 				'args'                => [
@@ -239,7 +245,9 @@ class REST extends Component {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_modifications' ),
 				'permission_callback' => function ( WP_REST_Request $request ) {
-					return $this->plugin->settings->isValidApiKey( $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) );
+					// the modifications page lists them for administrators without the key
+					return current_user_can( 'manage_options' )
+					       || $this->plugin->settings->isValidApiKey( $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) );
 				},
 				'args'                => [
 					'site_id'       => [

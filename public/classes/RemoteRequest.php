@@ -9,6 +9,12 @@ use WP_Error;
 
 class RemoteRequest extends Component {
 
+	/*
+	 * The wp_safe_ variants refuse internal addresses and unusual ports, so a
+	 * registered site URL cannot point requests at this server's network. For
+	 * sites that really are internal, allow them with the core filter
+	 * http_request_host_is_external.
+	 */
 	public function getHeaders(){
 		return apply_filters(Plugin::FILTER_REMOTE_REQUEST_HEADER,[]);
 	}
@@ -25,7 +31,7 @@ class RemoteRequest extends Component {
 			'headers' => $headers,
 		);
 		$finalUrl = add_query_arg( Plugin::REQUEST_PARAM_API_KEY, $site_api_key, $url );
-		$response = wp_remote_get( $finalUrl, $args );
+		$response = wp_safe_remote_get( $finalUrl, $args );
 		if($response instanceof WP_Error) return $response;
 		return json_decode($response['body']);
 	}
@@ -39,7 +45,7 @@ class RemoteRequest extends Component {
 	 */
 	public function post( $url, $site_api_key, $data ) {
 		$headers = $this->getHeaders();
-		$response = wp_remote_post(
+		$response = wp_safe_remote_post(
 			add_query_arg( Plugin::REQUEST_PARAM_API_KEY, $site_api_key, $url ),
 			[
 				"body" => $data,
