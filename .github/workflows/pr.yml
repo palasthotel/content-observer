@@ -15,7 +15,7 @@ jobs:
       slug: content-observer
       dev-plugin-name: Content Observer - DEV
       # Requires PHP: 8.0
-      php-versions: '["8.0", "8.2", "8.3", "8.4"]'
+      php-versions: '["8.0", "8.1", "8.2", "8.3", "8.4", "8.5"]'
       # public/dist and public/vendor are not in the repository; the pipeline builds them
       build-command: npm ci && npm run build
       # what the plugin loads, so a renamed build output fails here instead of
