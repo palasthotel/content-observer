@@ -134,15 +134,23 @@ class Settings extends Component {
 	public function page_init() {
 		register_setting(
 			Plugin::DOMAIN,
-			Plugin::OPTION_API_KEY
+			Plugin::OPTION_API_KEY,
+			[ 'sanitize_callback' => 'sanitize_text_field' ]
+		);
+		$checkbox = [
+			'sanitize_callback' => function ( $value ) {
+				return $value === "1" ? "1" : "";
+			},
+		];
+		register_setting(
+			Plugin::DOMAIN,
+			Plugin::OPTION_SCHEDULE_NOTIFY_OBSERVERS_IS_DISABLED,
+			$checkbox
 		);
 		register_setting(
 			Plugin::DOMAIN,
-			Plugin::OPTION_SCHEDULE_NOTIFY_OBSERVERS_IS_DISABLED
-		);
-		register_setting(
-			Plugin::DOMAIN,
-			Plugin::OPTION_SCHEDULE_START_MODIFICATION_HOOK_IS_DISABLED
+			Plugin::OPTION_SCHEDULE_START_MODIFICATION_HOOK_IS_DISABLED,
+			$checkbox
 		);
 
 		add_settings_section(
@@ -201,17 +209,20 @@ class Settings extends Component {
 	}
 
 	public function api_key() {
-		$apiKey = $this->getApiKey();
-		echo "<input value='$apiKey' type='text' name='" . Plugin::OPTION_API_KEY . "' />";
+		printf(
+			"<input value='%s' type='text' class='regular-text' name='%s' />",
+			esc_attr( $this->getApiKey() ),
+			esc_attr( Plugin::OPTION_API_KEY )
+		);
 	}
 
 	public function checkbox($isChecked, $optionName, $info){
 		$checked = $isChecked ? "checked='checked'" : "";
 		printf(
-			"<input value='1' %s type='checkbox' name='%s' /> %s",
+			"<label><input value='1' %s type='checkbox' name='%s' /> %s</label>",
 			$checked,
-			$optionName,
-			$info
+			esc_attr( $optionName ),
+			esc_html( $info )
 		);
 	}
 
