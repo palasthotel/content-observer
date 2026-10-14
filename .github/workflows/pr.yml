@@ -10,8 +10,9 @@ permissions:
 
 jobs:
   checks:
-    uses: palasthotel/github-workflows/.github/workflows/wp-plugin-pr.yml@v1
+    uses: palasthotel/github-workflows/.github/workflows/wp-plugin-pr.yml@feat/plugin-check
     with:
+      tools-ref: feat/plugin-check
       slug: content-observer
       dev-plugin-name: Content Observer - DEV
       # Requires PHP: 8.0
