@@ -5,6 +5,8 @@ use Palasthotel\WordPress\ContentObserver\Model\Modification;
 use Palasthotel\WordPress\ContentObserver\Model\Site;
 use Palasthotel\WordPress\ContentObserver\Plugin;
 
+defined( 'ABSPATH' ) || exit;
+
 function content_observer_plugin(){
 	return Plugin::instance();
 }

@@ -7,6 +7,8 @@ use Palasthotel\WordPress\ContentObserver\Components\Database;
 use Palasthotel\WordPress\ContentObserver\Model\Modification;
 use Palasthotel\WordPress\ContentObserver\Model\ModQueryArgs;
 
+defined( 'ABSPATH' ) || exit;
+
 
 class Modifications extends Database {
 
@@ -61,11 +63,13 @@ class Modifications extends Database {
 			$hasValidPageIndex
 		){
 			$offset =$pageIndex*$limit;
-			$limitQuery = "LIMIT $offset, $limit";
+			$limitQuery = $this->wpdb->prepare( "LIMIT %d, %d", $offset, $limit );
 		} else if($hasValidLimit){
-			$limitQuery = "LIMIT $limit";
+			$limitQuery = $this->wpdb->prepare( "LIMIT %d", $limit );
 		}
 
+		// $where and $limitQuery are built with prepare() above, the table name has no user input
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$results = $this->wpdb->get_results(
 			"SELECT site_id, content_id, content_type, mod_time, mod_type FROM $this->table $where ORDER BY mod_time DESC $limitQuery",
 		);
@@ -76,10 +80,12 @@ class Modifications extends Database {
 			                   ->setSiteId( $row->site_id )
 			                   ->setType( $row->mod_type );
 		}, $results );
+		// phpcs:enable
 	}
 
 	public function countModifications( ModQueryArgs $args ): int {
 		$where = $this->buildWhere($args);
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where is built with prepare()
 		$count = $this->wpdb->get_var( "SELECT count(site_id) FROM $this->table $where" );
 		return intval($count);
 	}

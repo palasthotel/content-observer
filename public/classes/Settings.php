@@ -6,6 +6,8 @@ namespace Palasthotel\WordPress\ContentObserver;
 
 use Palasthotel\WordPress\ContentObserver\Components\Component;
 
+defined( 'ABSPATH' ) || exit;
+
 class Settings extends Component {
 
 	public function onCreate() {
@@ -13,11 +15,48 @@ class Settings extends Component {
 
 		add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
 		add_action( 'admin_init', array( $this, 'page_init' ) );
+		add_action( 'admin_notices', array( $this, 'missing_api_key_notice' ) );
 
+	}
+
+	public function missing_api_key_notice(): void {
+		if ( $this->hasApiKey() || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		$screen = get_current_screen();
+		if ( ! $screen || strpos( $screen->id, Plugin::DOMAIN ) === false ) {
+			return;
+		}
+		printf(
+			'<div class="notice notice-warning"><p>%s <a href="%s">%s</a></p></div>',
+			esc_html__( 'Content Observer: No API key is set, so connected sites cannot reach this site.', 'content-observer' ),
+			esc_url( admin_url( 'admin.php?page=' . Plugin::SETTINGS_PAGE ) ),
+			esc_html__( 'Set an API key', 'content-observer' )
+		);
 	}
 
 	public function getApiKey() {
 		return get_option( Plugin::OPTION_API_KEY, "" );
+	}
+
+	public function hasApiKey(): bool {
+		$apiKey = $this->getApiKey();
+
+		return is_string( $apiKey ) && $apiKey !== "";
+	}
+
+	/**
+	 * Without a key of its own the site accepts no key at all - an empty key
+	 * would otherwise match an empty parameter and open every route.
+	 */
+	public function isValidApiKey( $apiKey ): bool {
+		return $this->hasApiKey() && is_string( $apiKey ) && hash_equals( $this->getApiKey(), $apiKey );
+	}
+
+	public function generateApiKeyIfMissing(): void {
+		if ( ! $this->hasApiKey() ) {
+			update_option( Plugin::OPTION_API_KEY, wp_generate_password( 32, false ) );
+		}
 	}
 
 	public function isNotifyObserversScheduleDisabled() {
@@ -97,15 +136,23 @@ class Settings extends Component {
 	public function page_init() {
 		register_setting(
 			Plugin::DOMAIN,
-			Plugin::OPTION_API_KEY
+			Plugin::OPTION_API_KEY,
+			[ 'sanitize_callback' => 'sanitize_text_field' ]
+		);
+		$checkbox = [
+			'sanitize_callback' => function ( $value ) {
+				return $value === "1" ? "1" : "";
+			},
+		];
+		register_setting(
+			Plugin::DOMAIN,
+			Plugin::OPTION_SCHEDULE_NOTIFY_OBSERVERS_IS_DISABLED,
+			$checkbox
 		);
 		register_setting(
 			Plugin::DOMAIN,
-			Plugin::OPTION_SCHEDULE_NOTIFY_OBSERVERS_IS_DISABLED
-		);
-		register_setting(
-			Plugin::DOMAIN,
-			Plugin::OPTION_SCHEDULE_START_MODIFICATION_HOOK_IS_DISABLED
+			Plugin::OPTION_SCHEDULE_START_MODIFICATION_HOOK_IS_DISABLED,
+			$checkbox
 		);
 
 		add_settings_section(
@@ -164,17 +211,19 @@ class Settings extends Component {
 	}
 
 	public function api_key() {
-		$apiKey = $this->getApiKey();
-		echo "<input value='$apiKey' type='text' name='" . Plugin::OPTION_API_KEY . "' />";
+		printf(
+			"<input value='%s' type='text' class='regular-text' name='%s' />",
+			esc_attr( $this->getApiKey() ),
+			esc_attr( Plugin::OPTION_API_KEY )
+		);
 	}
 
 	public function checkbox($isChecked, $optionName, $info){
-		$checked = $isChecked ? "checked='checked'" : "";
 		printf(
-			"<input value='1' %s type='checkbox' name='%s' /> %s",
-			$checked,
-			$optionName,
-			$info
+			"<label><input value='1' %s type='checkbox' name='%s' /> %s</label>",
+			checked( $isChecked, true, false ),
+			esc_attr( $optionName ),
+			esc_html( $info )
 		);
 	}
 

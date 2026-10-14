@@ -11,6 +11,8 @@ use Palasthotel\WordPress\ContentObserver\Model\Modification;
 use Palasthotel\WordPress\ContentObserver\Model\ModQueryArgs;
 use Palasthotel\WordPress\ContentObserver\Model\Site;
 
+defined( 'ABSPATH' ) || exit;
+
 class Repository extends Component {
 
 	private Modifications $modificationsDB;

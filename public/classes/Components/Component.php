@@ -5,6 +5,8 @@ namespace Palasthotel\WordPress\ContentObserver\Components;
 
 use Palasthotel\WordPress\ContentObserver\Plugin;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Class Component
  *

@@ -1,1 +1,12 @@
+*.DS_Store
+.idea
 /node_modules
+# compiled admin scripts - built by the pipeline, never committed
+/public/dist
+# composer autoloader - the pack writes it
+/public/vendor
+# pack staging directory
+/build
+*.zip
+# local wp-env settings
+/.wp-env.override.json

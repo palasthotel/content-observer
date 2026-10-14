@@ -125,7 +125,11 @@ const ModificationsList = () => {
                                         className="button button-secondary button-small"
                                         onClick={()=> handleApply(key, mod.modified)}
                                     >
-                                        Apply {dateFormat(mod.modified)} and newer {showResult ? icon : null }
+                                        Apply {dateFormat(mod.modified)} and newer {
+                                            // wp-emoji swaps an emoji for an <img>, so React would no
+                                            // longer find its text node and unmount the whole page
+                                            showResult ? <span className="wp-exclude-emoji">{icon}</span> : null
+                                        }
                                     </button>
                                     :
                                     null

@@ -6,6 +6,8 @@ namespace Palasthotel\WordPress\ContentObserver\Logger;
 
 use Palasthotel\WordPress\ContentObserver\Interfaces\ILogger;
 
+defined( 'ABSPATH' ) || exit;
+
 class CLILogger implements ILogger {
 
 	function line( $msg ) {

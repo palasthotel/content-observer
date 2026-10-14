@@ -10,6 +10,8 @@ use WP_Error;
 use WP_REST_Request;
 use WP_REST_Server;
 
+defined( 'ABSPATH' ) || exit;
+
 class REST extends Component {
 	const NAMESPACE = "content-sync/v1";
 	public function onCreate() {
@@ -43,7 +45,13 @@ class REST extends Component {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'ping' ],
 				'permission_callback' => function ( WP_REST_Request $request ) {
-					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
+					// Testing a connection makes this site send requests, so only an
+					// administrator may ask for it. Other sites only ping without arguments.
+					if ( ! empty( $request->get_param( "site_url" ) ) || ! empty( $request->get_param( "site_id" ) ) ) {
+						return current_user_can( 'manage_options' );
+					}
+
+					return $this->plugin->settings->isValidApiKey( $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) );
 				},
 				'args'                => [
 					'site_id'      => [
@@ -160,7 +168,7 @@ class REST extends Component {
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => [ $this, 'connect' ],
 				'permission_callback' => function ( WP_REST_Request $request ) {
-					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
+					return $this->plugin->settings->isValidApiKey( $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) );
 				},
 				'args'                => [
 					"site_url"        => array(
@@ -179,7 +187,7 @@ class REST extends Component {
 					],
 					"relation_type"   => [
 						'validate_callback' => function ( $value, $request, $param ) {
-							return $value === Site::OBSERVER || Site::OBSERVABLE;
+							return in_array( $value, [ Site::OBSERVER, Site::OBSERVABLE, Site::BOTH ], true );
 						},
 					]
 				]
@@ -192,7 +200,7 @@ class REST extends Component {
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'post_modifications' ),
 				'permission_callback' => function ( WP_REST_Request $request ) {
-					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
+					return $this->plugin->settings->isValidApiKey( $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) );
 				},
 				'args'                => [
 					"site_url" => [
@@ -239,7 +247,9 @@ class REST extends Component {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_modifications' ),
 				'permission_callback' => function ( WP_REST_Request $request ) {
-					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
+					// the modifications page lists them for administrators without the key
+					return current_user_can( 'manage_options' )
+					       || $this->plugin->settings->isValidApiKey( $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) );
 				},
 				'args'                => [
 					'site_id'       => [
@@ -252,7 +262,7 @@ class REST extends Component {
 					"number"        => [
 						'default'           => 100,
 						'validate_callback' => function ( $value, $request, $param ) {
-							return "" . $value === intval( $value ) . "" && intval( $value ) > 0;
+							return "" . $value === intval( $value ) . "" && intval( $value ) > 0 && intval( $value ) <= 500;
 						},
 						'sanitize_callback' => function ( $value, $request, $param ) {
 							return intval( $value );
@@ -383,7 +393,7 @@ class REST extends Component {
 
 		}
 
-		foreach ( $deletes as $site_id ) {
+		foreach ( is_array( $deletes ) ? $deletes : [] as $site_id ) {
 			$this->plugin->repo->deleteSite( intval( $site_id ) );
 		}
 

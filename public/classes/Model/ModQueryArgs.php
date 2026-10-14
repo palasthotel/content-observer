@@ -2,6 +2,8 @@
 
 namespace Palasthotel\WordPress\ContentObserver\Model;
 
+defined( 'ABSPATH' ) || exit;
+
 class ModQueryArgs {
 
 	public int $per_page = 100;

@@ -5,6 +5,8 @@ namespace Palasthotel\WordPress\ContentObserver\Components;
 
 use wpdb;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * @version 0.1.1
  */

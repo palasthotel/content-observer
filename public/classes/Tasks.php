@@ -11,6 +11,8 @@ use Palasthotel\WordPress\ContentObserver\Model\Site;
 use Palasthotel\WordPress\ContentObserver\Model\SiteModificationAction;
 use WP_Error;
 
+defined( 'ABSPATH' ) || exit;
+
 class Tasks extends Component {
 
 	private ILogger $logger;
@@ -107,18 +109,18 @@ class Tasks extends Component {
 			] );
 			if ( $response instanceof WP_Error ) {
 				$this->setTaskIsRunning( $taskId, false );
-				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url, api_key: $site->api_key -> {$response->get_error_message()}" );
+				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url -> {$response->get_error_message()}" );
 
 				return false;
 			}
 			if ( ! is_object( $response ) ) {
 				$this->setTaskIsRunning( $taskId, false );
-				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url, api_key: $site->api_key -> response is no object" );
+				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url -> response is no object" );
 
 				return false;
 			} else if ( ! isset( $response->success ) || ! $response->success ) {
 				$this->setTaskIsRunning( $taskId, false );
-				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url, api_key: $site->api_key -> response was no success " . json_encode( $response ) );
+				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url -> response was no success " . json_encode( $response ) );
 
 				return false;
 			}
@@ -331,8 +333,10 @@ class Tasks extends Component {
 	 * @return void
 	 */
 	public function runModifications( Site $site, array $mods ): void {
+		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- the constants start with content_observer_
 		do_action( Plugin::ACTION_ON_MODIFICATIONS, SiteModificationAction::build( $site, $mods ) );
 		do_action( sprintf( Plugin::ACTION_ON_SITE_MODIFICATIONS, $site->id ), SiteModificationAction::build( $site, $mods ) );
+		// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 	}
 
 	/**
