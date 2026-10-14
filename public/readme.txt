@@ -46,6 +46,11 @@ No. It reports which content changed. Copying or refreshing content is done by y
 
 Yes. `content_observer_add_modification( Modification::build( $id, 'my-type' )->update() )` records a modification of any content type.
 
+== Upgrade Notice ==
+
+= 1.2.4 =
+Security release. A site without an API key no longer accepts requests from other sites - set a key under Content Observer → Settings before updating if the field is empty.
+
 == Changelog ==
 
 = 1.2.3 =

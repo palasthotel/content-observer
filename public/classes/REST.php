@@ -43,7 +43,7 @@ class REST extends Component {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'ping' ],
 				'permission_callback' => function ( WP_REST_Request $request ) {
-					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
+					return $this->plugin->settings->isValidApiKey( $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) );
 				},
 				'args'                => [
 					'site_id'      => [
@@ -160,7 +160,7 @@ class REST extends Component {
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => [ $this, 'connect' ],
 				'permission_callback' => function ( WP_REST_Request $request ) {
-					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
+					return $this->plugin->settings->isValidApiKey( $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) );
 				},
 				'args'                => [
 					"site_url"        => array(
@@ -192,7 +192,7 @@ class REST extends Component {
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'post_modifications' ),
 				'permission_callback' => function ( WP_REST_Request $request ) {
-					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
+					return $this->plugin->settings->isValidApiKey( $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) );
 				},
 				'args'                => [
 					"site_url" => [
@@ -239,7 +239,7 @@ class REST extends Component {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_modifications' ),
 				'permission_callback' => function ( WP_REST_Request $request ) {
-					return $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) === $this->plugin->settings->getApiKey();
+					return $this->plugin->settings->isValidApiKey( $request->get_param( Plugin::REQUEST_PARAM_API_KEY ) );
 				},
 				'args'                => [
 					'site_id'       => [

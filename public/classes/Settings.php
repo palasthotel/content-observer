@@ -13,11 +13,48 @@ class Settings extends Component {
 
 		add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
 		add_action( 'admin_init', array( $this, 'page_init' ) );
+		add_action( 'admin_notices', array( $this, 'missing_api_key_notice' ) );
 
+	}
+
+	public function missing_api_key_notice(): void {
+		if ( $this->hasApiKey() || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		$screen = get_current_screen();
+		if ( ! $screen || strpos( $screen->id, Plugin::DOMAIN ) === false ) {
+			return;
+		}
+		printf(
+			'<div class="notice notice-warning"><p>%s <a href="%s">%s</a></p></div>',
+			esc_html__( 'Content Observer: No API key is set, so connected sites cannot reach this site.', 'content-observer' ),
+			esc_url( admin_url( 'admin.php?page=' . Plugin::SETTINGS_PAGE ) ),
+			esc_html__( 'Set an API key', 'content-observer' )
+		);
 	}
 
 	public function getApiKey() {
 		return get_option( Plugin::OPTION_API_KEY, "" );
+	}
+
+	public function hasApiKey(): bool {
+		$apiKey = $this->getApiKey();
+
+		return is_string( $apiKey ) && $apiKey !== "";
+	}
+
+	/**
+	 * Without a key of its own the site accepts no key at all - an empty key
+	 * would otherwise match an empty parameter and open every route.
+	 */
+	public function isValidApiKey( $apiKey ): bool {
+		return $this->hasApiKey() && is_string( $apiKey ) && hash_equals( $this->getApiKey(), $apiKey );
+	}
+
+	public function generateApiKeyIfMissing(): void {
+		if ( ! $this->hasApiKey() ) {
+			update_option( Plugin::OPTION_API_KEY, wp_generate_password( 32, false ) );
+		}
 	}
 
 	public function isNotifyObserversScheduleDisabled() {

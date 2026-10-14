@@ -116,6 +116,7 @@ class Plugin extends Components\Plugin {
 	public function onSiteActivation() {
 		parent::onSiteActivation();
 		$this->repo->init();
+		$this->settings->generateApiKeyIfMissing();
 	}
 }
 
