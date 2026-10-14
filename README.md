@@ -19,6 +19,8 @@ to a hook in that site's code.
 Both sites have the plugin and an API key (Content Observer → Settings). Under
 Content Observer → Manage the sites are connected; the connection exchanges the keys.
 
+![Manage page with the sites observing this one and the sites it observes](assets/screenshot-2.png)
+
 ## How changes travel
 
 - **notify** (observable → observer): sends new modifications to every observer, hourly
@@ -30,6 +32,8 @@ Content Observer → Manage the sites are connected; the connection exchanges th
 
 Both schedules can be disabled under Settings if a system cron runs the WP-CLI commands
 instead.
+
+![Modifications page with the Fetch, Notify and Apply buttons](assets/screenshot-1.png)
 
 ## Hooks
 
