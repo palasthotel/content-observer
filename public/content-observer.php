@@ -2,18 +2,18 @@
 
 /**
  * Plugin Name: Content Observer
- * Plugin URI: https://github.com/palasthotel/content-observer
- * Description: Efficiently observe content changes between WordPress instances
+ * Plugin URI: https://github.com/palasthotel/wp-content-observer
+ * Description: Efficiently observe content changes between WordPress instances.
  * Version: 1.2.3
- * Author: Palasthotel <rezeption@palasthotel.de> (Edward Bock)
- * Author URI: http://www.palasthotel.de
  * Requires at least: 6.0
- * Tested up to: 6.2.2
+ * Requires PHP: 8.0
+ * Author: Palasthotel
+ * Author URI: https://palasthotel.de
  * Text Domain: content-observer
- * License: http://www.gnu.org/licenses/gpl-2.0.html GPLv2
+ * License: GPL-3.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  * @copyright Copyright (c) 2023, Palasthotel
  * @package Palasthotel\WordPress\ContentObserver
- *
  */
 
 namespace Palasthotel\WordPress\ContentObserver;

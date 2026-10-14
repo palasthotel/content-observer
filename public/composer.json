@@ -1,4 +1,8 @@
 {
+  "name": "palasthotel/content-observer",
+  "description": "Efficiently observe content changes between WordPress instances.",
+  "type": "wordpress-plugin",
+  "license": "GPL-3.0-or-later",
   "autoload": {
     "psr-4": {
       "Palasthotel\\WordPress\\ContentObserver\\": "classes"
