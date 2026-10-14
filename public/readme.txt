@@ -5,7 +5,7 @@ Tags: sync, multisite, content, developer, wp-cli
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -52,6 +52,15 @@ Yes. `content_observer_add_modification( Modification::build( $id, 'my-type' )->
 Security release. A site without an API key no longer accepts requests from other sites - set a key under Content Observer → Settings before updating if the field is empty.
 
 == Changelog ==
+
+= 1.2.4 =
+**Bug Fixes**
+* connection test can no longer make the site request arbitrary URLs (4f494f5)
+* escape admin notice logs and keep API keys out of them (08b8c06)
+* escape the API key field on the settings page (8fc9ae1)
+* modifications page disappears after applying modifications (c3f6bb8)
+* protect Fetch, Notify and Apply against cross-site requests (1ae6a34)
+* reject requests to other sites' routes when no API key is set (7775e3d)
 
 = 1.2.3 =
 * Major library updates
