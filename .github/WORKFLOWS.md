@@ -14,4 +14,4 @@ What is specific to this plugin:
 | build step | `npm ci && npm run build` in `pr.yml` and the deploy - `public/dist/` (the admin pages) is not in the repository |
 | `required-files` | the built `dist/modifications.*` and `dist/settings.*`, the composer autoloader |
 | composer | `public/composer.json` only defines the autoloader; the pack writes `public/vendor/`, which is not in the repository |
-| `php -l` | 8.0 to 8.4 - `Requires PHP: 8.0` |
+| `php -l` | 8.0 to 8.5 - `Requires PHP: 8.0` |
