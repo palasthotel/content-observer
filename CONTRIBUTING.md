@@ -88,6 +88,6 @@ entries alone.
 
 ## Checks
 
-Every PR runs `php -l` against PHP 8.0 and 8.2 to 8.4, builds the admin pages, packs the
+Every PR runs `php -l` against PHP 8.0 to 8.4, builds the admin pages, packs the
 plugin and asserts that the payload holds every file the plugin enqueues and none of the
 repository-only ones, and checks the version carriers agree.
