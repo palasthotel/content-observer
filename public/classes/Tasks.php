@@ -333,8 +333,10 @@ class Tasks extends Component {
 	 * @return void
 	 */
 	public function runModifications( Site $site, array $mods ): void {
+		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- the constants start with content_observer_
 		do_action( Plugin::ACTION_ON_MODIFICATIONS, SiteModificationAction::build( $site, $mods ) );
 		do_action( sprintf( Plugin::ACTION_ON_SITE_MODIFICATIONS, $site->id ), SiteModificationAction::build( $site, $mods ) );
+		// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 	}
 
 	/**

@@ -75,6 +75,7 @@ class Sites extends Database {
 	 */
 	public function getAll() {
 		$results = $this->wpdb->get_results(
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name, no user input
 			"SELECT id, slug, site_url, site_api_key, relation_type, registration_time, last_notification_time FROM $this->table"
 		);
 

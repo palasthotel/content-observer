@@ -44,20 +44,21 @@ class Ajax extends Component {
 		$this->authorize();
 		$result = $this->plugin->tasks->notify( $this->getSiteId() );
 		if ( is_wp_error( $result ) ) {
-			error_log( $result->get_error_message() );
 			wp_send_json_error( [ "message" => $result->get_error_message() ] );
 		}
 
 		wp_send_json_success( [] );
 	}
 
+	// phpcs:disable WordPress.Security.NonceVerification.Missing -- authorize() checked the nonce
 	private function getSiteId(): ?int {
-		return isset( $_POST["site_id"] ) ? intval( $_POST["site_id"] ) : null;
+		return isset( $_POST["site_id"] ) ? absint( wp_unslash( $_POST["site_id"] ) ) : null;
 	}
 
 	public function apply(): void {
 		$this->authorize();
-		$since  = isset( $_POST["since"] ) ? intval( $_POST["since"] ) : 0;
+		$since  = isset( $_POST["since"] ) ? absint( wp_unslash( $_POST["since"] ) ) : 0;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		$result = $this->plugin->tasks->doModificationsHook( $since );
 		wp_send_json_success( [
 			"number_of_modifications" => $result,

@@ -18,6 +18,7 @@ class RemoteRequest extends Component {
 	 * http_request_host_is_external.
 	 */
 	public function getHeaders(){
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- content_observer_remote_request_header
 		return apply_filters(Plugin::FILTER_REMOTE_REQUEST_HEADER,[]);
 	}
 

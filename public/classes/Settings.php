@@ -219,10 +219,9 @@ class Settings extends Component {
 	}
 
 	public function checkbox($isChecked, $optionName, $info){
-		$checked = $isChecked ? "checked='checked'" : "";
 		printf(
 			"<label><input value='1' %s type='checkbox' name='%s' /> %s</label>",
-			$checked,
+			checked( $isChecked, true, false ),
 			esc_attr( $optionName ),
 			esc_html( $info )
 		);

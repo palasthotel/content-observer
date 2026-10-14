@@ -9,12 +9,13 @@ defined( 'ABSPATH' ) || exit;
 class Assets extends Component {
 
 	public function enqueueModifications(): void {
-		$info = include $this->plugin->path . "/dist/modifications.asset.php";
+		$info = include $this->plugin->path . "dist/modifications.asset.php";
 		wp_enqueue_script(
 			Plugin::HANDLE_MODIFICATIONS_JS,
-			$this->plugin->url . "/dist/modifications.js",
+			$this->plugin->url . "dist/modifications.js",
 			$info["dependencies"],
-			$info["version"]
+			$info["version"],
+			true
 		);
 		wp_localize_script(
 			Plugin::HANDLE_MODIFICATIONS_JS,
@@ -27,12 +28,13 @@ class Assets extends Component {
 	}
 
 	public function enqueueSettings() {
-		$info = include $this->plugin->path . "/dist/settings.asset.php";
+		$info = include $this->plugin->path . "dist/settings.asset.php";
 		wp_enqueue_script(
 			Plugin::HANDLE_SETTINGS_JS,
-			$this->plugin->url . "/dist/settings.js",
+			$this->plugin->url . "dist/settings.js",
 			$info["dependencies"],
-			$info["version"]
+			$info["version"],
+			true
 		);
 		wp_localize_script(
 			Plugin::HANDLE_SETTINGS_JS,

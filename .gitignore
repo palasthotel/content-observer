@@ -8,3 +8,5 @@
 # pack staging directory
 /build
 *.zip
+# local wp-env settings
+/.wp-env.override.json

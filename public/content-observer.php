@@ -87,8 +87,6 @@ class Plugin extends Components\Plugin {
 
 	public function onCreate() {
 
-		$this->loadTextdomain( self::DOMAIN, "languages" );
-
 		$this->assets        = new Assets( $this );
 		$this->repo          = new Repository( $this );
 		$this->rest          = new REST( $this );
