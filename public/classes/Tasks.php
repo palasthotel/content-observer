@@ -107,18 +107,18 @@ class Tasks extends Component {
 			] );
 			if ( $response instanceof WP_Error ) {
 				$this->setTaskIsRunning( $taskId, false );
-				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url, api_key: $site->api_key -> {$response->get_error_message()}" );
+				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url -> {$response->get_error_message()}" );
 
 				return false;
 			}
 			if ( ! is_object( $response ) ) {
 				$this->setTaskIsRunning( $taskId, false );
-				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url, api_key: $site->api_key -> response is no object" );
+				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url -> response is no object" );
 
 				return false;
 			} else if ( ! isset( $response->success ) || ! $response->success ) {
 				$this->setTaskIsRunning( $taskId, false );
-				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url, api_key: $site->api_key -> response was no success " . json_encode( $response ) );
+				$this->logger->error( "Could not connect to site ID: $site->id , url: $site->url -> response was no success " . json_encode( $response ) );
 
 				return false;
 			}

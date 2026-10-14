@@ -27,19 +27,21 @@ class AdminNoticeLogger implements ILogger {
 
 		$currentLogs = get_option(Plugin::OPTION_ADMIN_NOTICE_LOGS, []);
 		foreach ($currentLogs as $log) {
+			$log = (string) $log;
 			$noticeType = "notice-info";
-			if (str_starts_with("✅", $log)) {
+			if (str_starts_with($log, "✅")) {
 				$noticeType = "notice-success";
-			} else if (str_starts_with("🚨", $log)) {
+			} else if (str_starts_with($log, "🚨")) {
 				$noticeType = "notice-error";
-			} else if (str_starts_with("⚠️", $log)) {
+			} else if (str_starts_with($log, "⚠️")) {
 				$noticeType = "notice-warning";
 			}
-			?>
-            <div class="notice <?= $noticeType; ?>">
-                <strong>Content Observer:</strong> <?= $log ?>
-            </div>
-			<?php
+			// logs carry responses of other sites, so they are text, never markup
+			printf(
+				'<div class="notice %s"><p><strong>Content Observer:</strong> %s</p></div>',
+				esc_attr($noticeType),
+				esc_html($log)
+			);
 		}
 	}
 
