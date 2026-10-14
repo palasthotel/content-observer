@@ -1,6 +1,6 @@
 import {ModificationsQuery, ModificationsResponse} from "../@types/Modification";
 import apiFetch from "@wordpress/api-fetch";
-import {getAjaxUrl} from "./global";
+import {getAjaxNonce, getAjaxUrl} from "./global";
 
 export const fetchModifications = async (query: ModificationsQuery = {}) => {
     const params = new URLSearchParams({
@@ -11,6 +11,20 @@ export const fetchModifications = async (query: ModificationsQuery = {}) => {
     });
 }
 
+// admin-ajax actions change data, so they are POSTed with a nonce
+const postAjax = (action: string, data: Record<string, string>) => fetch(
+    getAjaxUrl(),
+    {
+        method: "POST",
+        credentials: "include",
+        body: new URLSearchParams({
+            action,
+            _ajax_nonce: getAjaxNonce(),
+            ...data,
+        }),
+    }
+).then(res => res.json());
+
 type FetchSiteModificationsResponse = {
     success: boolean
     data: {
@@ -18,17 +32,7 @@ type FetchSiteModificationsResponse = {
     }
 }
 export const fetchSiteModifications = (site_id: number) => {
-    const params = new URLSearchParams({
-        action: "content_observer_fetch_modifications",
-        site_id: site_id.toString(),
-    });
-    return fetch(
-        getAjaxUrl() + "?" + params.toString(),
-        {
-            credentials: "include",
-        }
-    )
-        .then(res => res.json())
+    return postAjax("content_observer_fetch_modifications", {site_id: site_id.toString()})
         .then(json => json as FetchSiteModificationsResponse)
         .catch(_ => ({success: false, data: {number_of_modifications: 0}}) as FetchSiteModificationsResponse);
 }
@@ -36,18 +40,7 @@ export const fetchSiteModifications = (site_id: number) => {
 type NotifyResponse = { success: true } | { success: false, data: { message: string } }
 
 export const notify = (site_id: number) => {
-    const params = new URLSearchParams({
-        action: "content_observer_notify",
-        site_id: site_id.toString(),
-    });
-
-    return fetch(
-        getAjaxUrl() + "?" + params.toString(),
-        {
-            credentials: "include",
-        }
-    )
-        .then(res => res.json())
+    return postAjax("content_observer_notify", {site_id: site_id.toString()})
         .then(json => json as NotifyResponse)
         .catch(reason => ({success: false, data: {message: reason.toString()}}) as NotifyResponse);
 }
@@ -59,17 +52,7 @@ type ApplyModificationsResponse = {
     }
 }
 export const applyModifications = (since: number) => {
-    const params = new URLSearchParams({
-        action: "content_observer_apply",
-        since: since.toString(),
-    });
-    return fetch(
-        getAjaxUrl() + "?" + params.toString(),
-        {
-            credentials: "include",
-        }
-    )
-        .then(res => res.json())
+    return postAjax("content_observer_apply", {since: since.toString()})
         .then(json => json as ApplyModificationsResponse)
         .catch(reason => ({success: false, data: {number_of_modifications: 0}}) as ApplyModificationsResponse);
 }

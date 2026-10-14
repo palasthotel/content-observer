@@ -19,6 +19,7 @@ class Assets extends Component {
 			"ContentObserver",
 			[
 				"ajax_url"    => admin_url( "admin-ajax.php" ),
+				"ajax_nonce"  => wp_create_nonce( Ajax::NONCE_ACTION ),
 			]
 		);
 	}
