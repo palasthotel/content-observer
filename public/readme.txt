@@ -22,6 +22,13 @@ The plugin moves no content by itself. It transports the modification (content i
 * Admin pages to manage connections and inspect and apply modifications
 * WP-CLI commands for every step, so a system cron can replace WP-Cron
 
+Typical uses:
+
+* A portal clears its cached teaser list as soon as an article on the news site changes
+* Several sites rebuild a mirrored navigation when the main site's menu changes
+* A central search site re-indexes changed posts and drops deleted ones
+* An archive site stores a copy of every article, so it survives a later deletion
+
 Developer documentation: [github.com/palasthotel/wp-content-observer](https://github.com/palasthotel/wp-content-observer)
 
 == External services ==

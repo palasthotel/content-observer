@@ -8,6 +8,41 @@ The plugin moves no content by itself. It transports *modifications* (content id
 content type, create/update/delete, time); what an observing site does with them is up
 to a hook in that site's code.
 
+## Use cases
+
+The examples use fictional sites: a *City Portal* that observes *news.example.com*,
+*events.example.com* and *archive.example.com*.
+
+- **Keep teaser lists fresh.** The City Portal shows the latest articles from
+  news.example.com and caches that list. When the newsroom edits or deletes an article,
+  the portal clears exactly that cache instead of waiting for it to expire.
+
+  ```php
+  use Palasthotel\WordPress\ContentObserver\Model\SiteModificationAction;
+
+  add_action( 'content_observer_on_modifications', function ( SiteModificationAction $action ) {
+  	if ( 'news' !== $action->site->slug ) {
+  		return;
+  	}
+  	foreach ( $action->modifications as $mod ) {
+  		if ( 'post' === $mod->content_type ) {
+  			delete_transient( 'city_portal_news_teasers' );
+  			return;
+  		}
+  	}
+  } );
+  ```
+
+- **Share one navigation.** The main site records
+  `Modification::build( 'main-navigation', 'wp-menu' )->update()` whenever its menu
+  changes, and every site observing it rebuilds its mirrored navigation.
+- **Central search.** A search site observes all the others. On `create` and `update`
+  it re-indexes the post from the observed site, on `delete` it drops it from the index.
+- **Archive articles.** archive.example.com observes news.example.com and stores a copy
+  of every article it hears about on `create` and `update`, so the article survives a
+  later `delete` on the news site. Because the archive is observer and observable at
+  once, the City Portal in turn learns when the archive changes.
+
 ## Concepts
 
 - **Observable**: a site whose changes others want to know about.
