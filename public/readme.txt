@@ -46,6 +46,13 @@ No. It reports which content changed. Copying or refreshing content is done by y
 
 Yes. `content_observer_add_modification( Modification::build( $id, 'my-type' )->update() )` records a modification of any content type.
 
+== Screenshots ==
+
+1. Modifications fetched from an observed site, with buttons to apply them from a point in time
+2. Manage page: the sites observing this one and the sites it observes, each with a connection test
+3. Connect a new site with its URL, slug, API key and relation type
+4. Settings: this site's API key and the WP-Cron schedules
+
 == Upgrade Notice ==
 
 = 1.2.4 =
