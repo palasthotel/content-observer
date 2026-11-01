@@ -12,8 +12,8 @@ jobs:
   checks:
     uses: palasthotel/github-workflows/.github/workflows/wp-plugin-pr.yml@v1
     with:
-      slug: content-observer
-      dev-plugin-name: Content Observer - DEV
+      slug: changecast
+      dev-plugin-name: Changecast - DEV
       # Requires PHP: 8.0
       php-versions: '["8.0", "8.1", "8.2", "8.3", "8.4", "8.5"]'
       # public/dist and public/vendor are not in the repository; the pipeline builds them

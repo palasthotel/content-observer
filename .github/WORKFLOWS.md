@@ -9,7 +9,7 @@ What is specific to this plugin:
 
 | | |
 |---|---|
-| wordpress.org slug | `content-observer` |
+| wordpress.org slug | `changecast` |
 | version file | `package.json` (`release-type: node`) |
 | build step | `npm ci && npm run build` in `pr.yml` and the deploy - `public/dist/` (the admin pages) is not in the repository |
 | `required-files` | the built `dist/modifications.*` and `dist/settings.*`, the composer autoloader |

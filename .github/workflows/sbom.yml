@@ -22,7 +22,7 @@ jobs:
     permissions:
       contents: write
     with:
-      slug: content-observer
+      slug: changecast
       build-command: npm ci && npm run build
       version: ${{ github.event.inputs.version }}
 

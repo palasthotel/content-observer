@@ -16,7 +16,7 @@
   "scripts": {
     "watch": "wp-scripts start --config webpack.config.js",
     "build": "wp-scripts build --config webpack.config.js",
-    "pack": "SLUG=content-observer bash ../github-workflows/wp-plugin/bin/pack.sh",
+    "pack": "SLUG=changecast bash ../github-workflows/wp-plugin/bin/pack.sh",
     "lint": "tsc --noEmit"
   },
   "devDependencies": {

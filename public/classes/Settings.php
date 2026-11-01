@@ -29,9 +29,9 @@ class Settings extends Component {
 		}
 		printf(
 			'<div class="notice notice-warning"><p>%s <a href="%s">%s</a></p></div>',
-			esc_html__( 'Content Observer: No API key is set, so connected sites cannot reach this site.', 'content-observer' ),
+			esc_html__( 'Changecast: No API key is set, so connected sites cannot reach this site.', 'changecast' ),
 			esc_url( admin_url( 'admin.php?page=' . Plugin::SETTINGS_PAGE ) ),
-			esc_html__( 'Set an API key', 'content-observer' )
+			esc_html__( 'Set an API key', 'changecast' )
 		);
 	}
 
@@ -72,8 +72,8 @@ class Settings extends Component {
 	 */
 	public function add_plugin_page() {
 		add_menu_page(
-			"Content Observer",
-			"Content Observer",
+			"Changecast",
+			"Changecast",
 			"manage_options",
 			Plugin::DOMAIN,
 			'',
@@ -81,7 +81,7 @@ class Settings extends Component {
 		);
 		add_submenu_page(
 			Plugin::DOMAIN,
-			'Content Observer',
+			'Changecast',
 			'Modifications',
 			'manage_options',
 			Plugin::MODIFICATIONS_PAGE,
@@ -92,7 +92,7 @@ class Settings extends Component {
 		);
 		add_submenu_page(
 			Plugin::DOMAIN,
-			'Content Observer',
+			'Changecast',
 			'Manage',
 			'manage_options',
 			Plugin::MANAGE_PAGE,
@@ -103,7 +103,7 @@ class Settings extends Component {
 		);
 		add_submenu_page(
 			Plugin::DOMAIN,
-			'Settings « Content Observer',
+			'Settings « Changecast',
 			'Settings',
 			'manage_options',
 			Plugin::SETTINGS_PAGE,
@@ -118,7 +118,7 @@ class Settings extends Component {
 	public function create_admin_page() {
 		?>
         <div class="wrap">
-            <h1>Settings « Content Observer</h1>
+            <h1>Settings « Changecast</h1>
             <form method="post" action="options.php">
 				<?php
 				settings_fields( Plugin::DOMAIN );
