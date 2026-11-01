@@ -44,7 +44,7 @@ class AdminNoticeLogger implements ILogger {
 			}
 			// logs carry responses of other sites, so they are text, never markup
 			printf(
-				'<div class="notice %s"><p><strong>Content Observer:</strong> %s</p></div>',
+				'<div class="notice %s"><p><strong>Changecast:</strong> %s</p></div>',
 				esc_attr($noticeType),
 				esc_html($log)
 			);

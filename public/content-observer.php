@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name: Content Observer
+ * Plugin Name: Changecast – Content Change Notifications Between Sites
  * Plugin URI: https://github.com/palasthotel/wp-content-observer
  * Description: Efficiently observe content changes between WordPress instances.
  * Version: 1.2.4
@@ -9,7 +9,7 @@
  * Requires PHP: 8.0
  * Author: Palasthotel
  * Author URI: https://palasthotel.de
- * Text Domain: content-observer
+ * Text Domain: changecast
  * License: GPL-3.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  * @copyright Copyright (c) 2023, Palasthotel
@@ -98,7 +98,7 @@ class Plugin extends Components\Plugin {
 		$this->tasks         = new Tasks( $this );
 
 		if ( class_exists( "\WP_CLI" ) ) {
-			\WP_CLI::add_command( 'content-observer', new CLI() );
+			\WP_CLI::add_command( 'changecast', new CLI() );
 		}
 
 		if(CONTENT_OBSERVER_USE_ADMIN_NOTICE_LOGGER == true){

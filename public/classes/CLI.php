@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 class CLI {
 
 	/**
-	 * ping content-observer sites
+	 * ping connected sites
 	 *
 	 * ## OPTIONS
 	 *
@@ -21,9 +21,9 @@ class CLI {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *   wp content-observer ping
-	 *   wp content-observer ping --url=https://domain.de/
-	 *   wp content-observer ping --site_id=1
+	 *   wp changecast ping
+	 *   wp changecast ping --url=https://domain.de/
+	 *   wp changecast ping --site_id=1
 	 *
 	 * @when after_wp_load
 	 */
@@ -32,7 +32,7 @@ class CLI {
 	}
 
 	/**
-	 * update connections to content-observer sites
+	 * update connections to connected sites
 	 *
 	 * ## OPTIONS
 	 *
@@ -41,8 +41,8 @@ class CLI {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *   wp content-observer connect
-	 *   wp content-observer connect --site_id=1
+	 *   wp changecast connect
+	 *   wp changecast connect --site_id=1
 	 *
 	 * @when after_wp_load
 	 */
@@ -53,7 +53,7 @@ class CLI {
 	}
 
 	/**
-	 * notify content observers sites about changes
+	 * notify observer sites about changes
 	 *
 	 * ## OPTIONS
 	 *
@@ -62,8 +62,8 @@ class CLI {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *   wp content-observer notify
-	 *   wp content-observer notify --site_id=1
+	 *   wp changecast notify
+	 *   wp changecast notify --site_id=1
 	 *
 	 * @when after_wp_load
 	 */
@@ -99,9 +99,9 @@ class CLI {
 	 * ---
 	 * ## EXAMPLES
 	 *
-	 *   wp content-observer fetch
-	 *   wp content-observer fetch --site_id=1
-	 *   wp content-observer fetch --site_id=1 --full=true
+	 *   wp changecast fetch
+	 *   wp changecast fetch --site_id=1
+	 *   wp changecast fetch --site_id=1 --full=true
 	 *
 	 * @when after_wp_load
 	 */
@@ -130,8 +130,8 @@ class CLI {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *   wp content-observer modifications
-	 *   wp content-observer modifications --since=1616417666
+	 *   wp changecast modifications
+	 *   wp changecast modifications --since=1616417666
 	 *
 	 * @when after_wp_load
 	 */
