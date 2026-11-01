@@ -5,7 +5,7 @@ Tags: sync, multisite, content, developer, wp-cli
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.2.4
+Stable tag: 2.0.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -69,6 +69,16 @@ The plugin was renamed from Content Observer to Changecast. The WP-CLI command i
 Security release. A site without an API key no longer accepts requests from other sites - set a key under Changecast → Settings before updating if the field is empty.
 
 == Changelog ==
+
+= 2.0.0 =
+**⚠ BREAKING CHANGES**
+* the WP-CLI command is now `wp changecast` instead of `wp content-observer`. Cron jobs that call `wp content-observer notify`, `fetch` or any other subcommand have to be changed to `wp changecast ...`.
+
+**Features**
+* rename the plugin to Changecast (5e19e76)
+
+**Bug Fixes**
+* show log notices only on the plugin's own admin pages (5acb3b4)
 
 = 1.2.4 =
 **Bug Fixes**
