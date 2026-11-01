@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name:       Changecast - DEV
- * Plugin URI:        https://github.com/palasthotel/wp-content-observer
+ * Plugin URI:        https://github.com/palasthotel/wp-changecast
  * Description:       Development wrapper. Loads the plugin from public/, which is what ships to wordpress.org. Do not deploy this file.
  * Version:           0.0.0-dev
  * Requires at least: 6.0

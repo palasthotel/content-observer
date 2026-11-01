@@ -29,7 +29,7 @@ Typical uses:
 * A central search site re-indexes changed posts and drops deleted ones
 * An archive site stores a copy of every article, so it survives a later deletion
 
-Developer documentation: [github.com/palasthotel/wp-content-observer](https://github.com/palasthotel/wp-content-observer)
+Developer documentation: [github.com/palasthotel/wp-changecast](https://github.com/palasthotel/wp-changecast)
 
 == External services ==
 
