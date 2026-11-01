@@ -27,6 +27,10 @@ class AdminNoticeLogger implements ILogger {
 
 		if (!current_user_can("manage_options")) return;
 
+		// only on the plugin's own pages, never across the whole dashboard
+		$screen = get_current_screen();
+		if (!$screen || strpos($screen->id, Plugin::DOMAIN) === false) return;
+
 		$currentLogs = get_option(Plugin::OPTION_ADMIN_NOTICE_LOGS, []);
 		foreach ($currentLogs as $log) {
 			$log = (string) $log;
