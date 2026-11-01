@@ -4,7 +4,7 @@
  * Plugin Name: Changecast – Content Change Notifications Between Sites
  * Plugin URI: https://github.com/palasthotel/wp-changecast
  * Description: Efficiently observe content changes between WordPress instances.
- * Version: 1.2.4
+ * Version: 2.0.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: Palasthotel

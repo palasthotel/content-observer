@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.0.0](https://github.com/palasthotel/wp-changecast/compare/v1.2.4...v2.0.0) (2026-11-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* the WP-CLI command is now `wp changecast` instead of `wp content-observer`. Cron jobs that call `wp content-observer notify`, `fetch` or any other subcommand have to be changed to `wp changecast ...`.
+
+### Features
+
+* rename the plugin to Changecast ([5e19e76](https://github.com/palasthotel/wp-changecast/commit/5e19e764d6d2c868087c737d4416e451ac7d31eb))
+
+
+### Bug Fixes
+
+* show log notices only on the plugin's own admin pages ([5acb3b4](https://github.com/palasthotel/wp-changecast/commit/5acb3b4ef5365fd787d383706c56377d97c9cbac))
+
 ## [1.2.4](https://github.com/palasthotel/wp-content-observer/compare/v1.2.3...v1.2.4) (2026-10-14)
 
 
